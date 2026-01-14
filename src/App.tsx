@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useState } from 'react';
 import type { CarSpec, Preferences } from './types/car';
 import { carService } from './services/carService';
 
@@ -6,6 +6,7 @@ import { Header } from './components/layout/Header';
 import { SearchBar } from './components/search/SearchBar';
 import { CarsGrid } from './components/cars/CarsGrid';
 import { ComparisonGrid } from './components/comparison/ComparisonGrid';
+import { PreferenceFilters } from './components/search/PreferenceFilters';
 
 export default function App() {
   const [cars, setCars] = useState<CarSpec[]>([]);
@@ -15,20 +16,14 @@ export default function App() {
   /* =====================
    * USER PREFERENCES
    * ===================== */
-  const preferences: Preferences = useMemo(
-    () => ({
-      minPower: 150,
-      maxConsumption: 8,
-      maxWeight: 1600,
-      maxPrice: 40000,
-      preferredTraction: 'any'
-    }),
-    []
-  );
-
-  /* =====================
-   * SEARCH HANDLER
-   * ===================== */
+ const [preferences, setPreferences] = useState<Preferences>({
+    minPower: 150,
+    maxConsumption: 8,
+    maxWeight: 1600,
+    maxPrice: 40000,
+    preferredTraction: 'any'
+  });
+  
   const search = useCallback(async (query: string) => {
     try {
       setLoading(true);
@@ -51,9 +46,7 @@ export default function App() {
     }
   }, [preferences]);
 
-  /* =====================
-   * COMPARISON HANDLERS
-   * ===================== */
+
   const addToCompare = useCallback((car: CarSpec) => {
     setSelected(prev =>
       prev.some(c => c.id === car.id) ? prev : [...prev, car]
@@ -64,9 +57,7 @@ export default function App() {
     setSelected(prev => prev.filter(c => c.id !== id));
   }, []);
 
-  /* =====================
-   * RENDER
-   * ===================== */
+
   return (
     <>
       <Header selectedCount={selected.length} />
@@ -74,10 +65,16 @@ export default function App() {
       <main className="max-w-7xl mx-auto p-6 space-y-8">
         <SearchBar onSearch={search} isLoading={loading} />
 
+        <PreferenceFilters 
+          preferences={preferences} 
+          setPreferences={setPreferences} 
+        />
+
         <CarsGrid
           cars={cars}
           isLoading={loading}
           onCompare={addToCompare}
+          selectedIds={selected.map(c => c.id)}
         />
 
         {selected.length > 0 && (
