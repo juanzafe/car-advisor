@@ -1,6 +1,8 @@
 import React from 'react';
 import { Zap, Fuel, Gauge } from 'lucide-react';
-import type { CarSpec } from '../types/Car';
+import type { CarSpec } from '../../types/car';
+
+
 
 
 

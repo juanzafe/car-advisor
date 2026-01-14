@@ -1,35 +1,47 @@
+import { useState } from 'react';
 import { Search } from 'lucide-react';
 
 interface SearchBarProps {
-  query: string;
-  onQueryChange: (value: string) => void;
-  onSearch: () => void;
-  loading: boolean;
+  onSearch: (query: string) => void | Promise<void>;
+  isLoading?: boolean;
 }
 
-export const SearchBar = ({
-  query,
-  onQueryChange,
-  onSearch,
-  loading
-}: SearchBarProps) => {
+export function SearchBar({ onSearch, isLoading = false }: SearchBarProps) {
+  const [query, setQuery] = useState('');
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!query.trim() || isLoading) return;
+
+    await onSearch(query.trim());
+  };
+
   return (
-    <div className="flex gap-4">
+    <form
+      onSubmit={handleSubmit}
+      className="flex items-center gap-3 bg-white rounded-xl shadow p-4"
+    >
+      <Search className="text-slate-400" size={20} />
+
       <input
         type="text"
+        placeholder="Buscar marca (BMW, Audi, Toyota...)"
         value={query}
-        onChange={(e) => onQueryChange(e.target.value)}
-        placeholder="Ej: BMW Serie 3, Audi A4..."
-        className="flex-1 p-4 rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-500 outline-none"
+        onChange={e => setQuery(e.target.value)}
+        disabled={isLoading}
+        className="flex-1 outline-none text-slate-700 disabled:bg-transparent"
       />
+
       <button
-        onClick={onSearch}
-        disabled={loading}
-        className="bg-blue-600 disabled:opacity-50 text-white px-8 py-4 rounded-xl font-bold hover:bg-blue-700 flex items-center gap-2"
+        type="submit"
+        disabled={isLoading}
+        className={`
+          px-5 py-2 rounded-lg text-white font-medium
+          ${isLoading ? 'bg-slate-400' : 'bg-blue-600 hover:bg-blue-700'}
+        `}
       >
-        <Search size={20} />
-        Buscar
+        {isLoading ? 'Buscando...' : 'Buscar'}
       </button>
-    </div>
+    </form>
   );
-};
+}

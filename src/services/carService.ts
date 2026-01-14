@@ -1,49 +1,84 @@
-import type { CarSpec } from "../types/Car";
+import type { CarSpec, Preferences } from "../types/car";
+import type { NhtsaResponse } from "../types/nhtsa";
 
 
-// Interfaz interna para entender lo que viene de la API de Ninjas
-interface ApiNinjaCar {
-  make: string;
-  model: string;
-  year: number;
-  combination_mpg: number;
-  displacement: number;
-  drive: string;
-}
+export const carService = {
+  angles: ['01', '05', '09', '13', '17', '21', '25', '29', '33'] as const,
 
-const API_KEY = import.meta.env.VITE_CARS_API_KEY;
-const BASE_URL = 'https://api.api-ninjas.com/v1/cars';
+  colors: [
+    { name: 'Blanco', hex: 'ffffff', code: 'white' },
+    { name: 'Negro', hex: '000000', code: 'black' },
+    { name: 'Gris', hex: '808080', code: 'grey' },
+    { name: 'Rojo', hex: 'ff0000', code: 'red' },
+    { name: 'Azul', hex: '0000ff', code: 'blue' }
+  ] as const,
 
-export const fetchCars = async (model: string): Promise<CarSpec[]> => {
-  // 1. Llamada a la API
-  const response = await fetch(`${BASE_URL}?model=${model}`, {
-    headers: { 'X-Api-Key': API_KEY }
-  });
+  getCarImage(
+    make: string,
+    model: string,
+    year: number,
+    angle: string = '01',
+    color: string = 'grey'
+  ): string {
+    const url = new URL('https://cdn.imagin.studio/getimage');
+    url.searchParams.append('customer', 'hrjavascript-mastery');
+    url.searchParams.append('make', make.toLowerCase());
+    url.searchParams.append('modelFamily', model.split(' ')[0].toLowerCase());
+    url.searchParams.append('zoomType', 'fullscreen');
+    url.searchParams.append('modelYear', year.toString());
+    url.searchParams.append('angle', angle);
+    url.searchParams.append('paintId', color);
+    return url.toString();
+  },
 
-  if (!response.ok) throw new Error('Error al buscar coches o API Key inválida');
+async fetchCars(make: string): Promise<CarSpec[]> {
+  const res = await fetch(
+    `https://vpic.nhtsa.dot.gov/api/vehicles/getmodelsformake/${make}?format=json`
+  );
 
-  const data: ApiNinjaCar[] = await response.json();
+  if (!res.ok) {
+    throw new Error("Failed to fetch cars");
+  }
 
-  // 2. Mapeo y transformación a tu formato CarSpec
-  return data.map((car: ApiNinjaCar, index: number): CarSpec => {
-    
-    // Convertimos la tracción de la API al formato de tu interfaz
-    let traccion: 'FWD' | 'RWD' | 'AWD' = 'FWD';
-    if (car.drive === 'rwd') traccion = 'RWD';
-    if (car.drive === 'awd' || car.drive === '4wd') traccion = 'AWD';
+  const data: NhtsaResponse = await res.json();
+
+  const tractions = ['FWD', 'RWD', 'AWD'] as const;
+
+  return data.Results.slice(0, 12).map((c, i) => {
+    const hp = 150 + Math.random() * 250;
+    const year = 2024 - Math.floor(Math.random() * 3);
 
     return {
-      id: `${car.model}-${index}-${car.year}`, 
-      brand: car.make,
-      model: car.model,
-      year: car.year,
-      // Estimación de caballos (HP) basada en cilindrada, ya que la API no los da
-      hp: car.displacement ? Math.floor(car.displacement * 70) : 150, 
-      consumption: car.combination_mpg, 
-      weight: 1400 + (index * 20), // Dato simulado por ahora
-      price: 22000 + (index * 1000), // Dato simulado por ahora
-      image: `https://images.unsplash.com/photo-1494976388531-d1058494cdd8?w=800`,
-      traction: traccion
+      id: `${c.Model_ID}-${i}`,
+      brand: c.Make_Name,
+      model: c.Model_Name,
+      year,
+      hp: Math.round(hp),
+      weight: Math.round(1300 + Math.random() * 500),
+      consumption: Math.round((5 + Math.random() * 5) * 10) / 10,
+      price: Math.round(20000 + hp * 120),
+      traction: tractions[Math.floor(Math.random() * tractions.length)],
+      image: this.getCarImage(c.Make_Name, c.Model_Name, year)
     };
   });
+},
+
+
+  calculateScore(car: CarSpec, prefs: Preferences): number {
+    let score = 100;
+
+    if (car.hp < prefs.minPower) score -= (prefs.minPower - car.hp) / 10;
+    if (car.consumption > prefs.maxConsumption) score -= (car.consumption - prefs.maxConsumption) * 5;
+    if (car.weight > prefs.maxWeight) score -= (car.weight - prefs.maxWeight) / 50;
+    if (car.price > prefs.maxPrice) score -= (car.price - prefs.maxPrice) / 1000;
+
+    if (
+      prefs.preferredTraction !== 'any' &&
+      car.traction === prefs.preferredTraction
+    ) {
+      score += 10;
+    }
+
+    return Math.max(0, Math.round(score));
+  }
 };
