@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useState, useEffect } from 'react';
 import type { CarSpec, Preferences } from './types/car';
 import { carService } from './services/carService';
 
@@ -12,30 +12,28 @@ export default function App() {
   const [cars, setCars] = useState<CarSpec[]>([]);
   const [selected, setSelected] = useState<CarSpec[]>([]);
   const [loading, setLoading] = useState(false);
+  const [lastQuery, setLastQuery] = useState(""); // Guardamos la última búsqueda
 
-  /* =====================
-   * USER PREFERENCES
-   * ===================== */
- const [preferences, setPreferences] = useState<Preferences>({
+  const [preferences, setPreferences] = useState<Preferences>({
     minPower: 150,
     maxConsumption: 8,
     maxWeight: 1600,
     maxPrice: 40000,
     preferredTraction: 'any'
   });
-  
+
   const search = useCallback(async (query: string) => {
-    try {
-      setLoading(true);
+  try {
+    setLoading(true);
+    const results = await carService.fetchCars(query);
+    
+    // DEBUG: ¿Cuántos llegan aquí?
+    console.log("Total resultados en App:", results.length);
 
-      const results = await carService.fetchCars(query);
-
-      const scoredCars = results
-        .map(car => ({
-          ...car,
-          score: carService.calculateScore(car, preferences)
-        }))
-        .sort((a, b) => (b.score ?? 0) - (a.score ?? 0));
+    const scoredCars = results.map(car => ({
+      ...car,
+      score: carService.calculateScore(car, preferences)
+    })).sort((a, b) => (b.score ?? 0) - (a.score ?? 0));
 
       setCars(scoredCars);
     } catch (error) {
@@ -46,6 +44,17 @@ export default function App() {
     }
   }, [preferences]);
 
+  // EFECTO DINÁMICO: Recalcula el score cuando cambias los sliders sin recargar la API
+  useEffect(() => {
+    if (cars.length > 0) {
+      const updatedCars = cars.map(car => ({
+        ...car,
+        score: carService.calculateScore(car, preferences)
+      })).sort((a, b) => (b.score ?? 0) - (a.score ?? 0));
+      
+      setCars(updatedCars);
+    }
+  }, [preferences]); // Se lanza cada vez que mueves un slider
 
   const addToCompare = useCallback((car: CarSpec) => {
     setSelected(prev =>
@@ -56,7 +65,6 @@ export default function App() {
   const removeFromCompare = useCallback((id: string) => {
     setSelected(prev => prev.filter(c => c.id !== id));
   }, []);
-
 
   return (
     <>
