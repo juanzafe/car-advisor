@@ -1,7 +1,6 @@
-export type Traction = 'FWD' | 'RWD' | 'AWD'; 
+export type Traction = 'FWD' | 'RWD' | 'AWD';
 
 export interface CarSpec {
-  traction: string;
   id: string;
   brand: string;
   model: string;
@@ -10,8 +9,14 @@ export interface CarSpec {
   weight: number;
   consumption: number;
   price: number;
+  traction: Traction;
   image: string;
-  score?: number;
+
+  // Scores
+  score?: number;        // score según preferencias del usuario
+  ecoScore: number;
+  sportScore: number;
+  familyScore: number;
 }
 
 export interface Preferences {
@@ -19,5 +24,5 @@ export interface Preferences {
   maxConsumption: number;
   maxWeight: number;
   maxPrice: number;
-  preferredTraction: string;
+  preferredTraction: Traction | 'any';
 }

@@ -1,4 +1,4 @@
-import type { CarSpec, Preferences } from "../types/car";
+import type { CarSpec, Preferences, Traction } from "../types/car";
 
 interface NhtsaResponse {
   Results: Array<{
@@ -15,22 +15,20 @@ const EUROPEAN_MODELS: Record<string, string[]> = {
   seat: ['Ibiza', 'Leon', 'Arona', 'Ateca', 'Tarraco', 'Formentor'],
   renault: ['Clio', 'Megane', 'Captur', 'Kadjar', 'Scenic', 'Talisman'],
   peugeot: ['208', '308', '2008', '3008', '5008', '508'],
-  citroen: ['C3', 'C4', 'C5 Aircross', 'Berlingo', 'SpaceTourer'],
-  fiat: ['500', 'Panda', 'Tipo', '500X', '500L', 'Ducato'],
-  alfa: ['Giulia', 'Stelvio', 'Giulietta', 'Tonale'],
+  citroen: ['C3', 'C4', 'C5 Aircross', 'Berlingo'],
+  fiat: ['500', 'Panda', 'Tipo', '500X'],
   skoda: ['Fabia', 'Octavia', 'Superb', 'Kamiq', 'Karoq', 'Kodiaq'],
-  dacia: ['Sandero', 'Duster', 'Logan', 'Spring', 'Jogger'],
-  opel: ['Corsa', 'Astra', 'Insignia', 'Crossland', 'Grandland', 'Mokka'],
-  bmw: ['Serie 1', 'Serie 3', 'Serie 5', 'Serie 7', 'X1', 'X3', 'X5', 'X7', 'Z4', 'M3', 'M5'],
-  audi: ['A1', 'A3', 'A4', 'A6', 'A8', 'Q2', 'Q3', 'Q5', 'Q7', 'TT', 'R8'],
-  mercedes: ['Clase A', 'Clase C', 'Clase E', 'Clase S', 'GLA', 'GLC', 'GLE', 'GLS'],
-  volkswagen: ['Polo', 'Golf', 'Passat', 'Tiguan', 'Touareg', 'T-Roc'],
-  volvo: ['XC40', 'XC60', 'XC90', 'S60', 'S90', 'V60'],
-  porsche: ['911', 'Cayenne', 'Macan', 'Panamera', 'Taycan']
+  dacia: ['Sandero', 'Duster', 'Jogger'],
+  bmw: ['Serie 1', 'Serie 3', 'Serie 5', 'X1', 'X3', 'X5', 'M3'],
+  audi: ['A1', 'A3', 'A4', 'A6', 'Q3', 'Q5', 'TT'],
+  mercedes: ['Clase A', 'Clase C', 'Clase E', 'GLA', 'GLC'],
+  volkswagen: ['Polo', 'Golf', 'Passat', 'Tiguan'],
+  volvo: ['XC40', 'XC60', 'S60'],
+  porsche: ['911', 'Cayenne', 'Macan']
 };
 
 /* ============================
-   Random estable (determinista)
+   Random determinista
 ============================ */
 function seededRandom(seed: string): number {
   let hash = 0;
@@ -42,17 +40,15 @@ function seededRandom(seed: string): number {
 }
 
 export const carService = {
-  angles: ['01', '05', '09', '13', '17', '21', '25', '29', '33'] as const,
-
-  getCarImage(make: string, model: string, year: number, angle = '01', color = 'grey'): string {
+  getCarImage(make: string, model: string, year: number): string {
     const url = new URL('https://cdn.imagin.studio/getimage');
     url.searchParams.append('customer', 'hrjavascript-mastery');
     url.searchParams.append('make', make.toLowerCase());
     url.searchParams.append('modelFamily', model.split(' ')[0].toLowerCase());
     url.searchParams.append('zoomType', 'fullscreen');
     url.searchParams.append('modelYear', year.toString());
-    url.searchParams.append('angle', angle);
-    url.searchParams.append('paintId', color);
+    url.searchParams.append('angle', '01');
+    url.searchParams.append('paintId', 'grey');
     return url.toString();
   },
 
@@ -67,65 +63,46 @@ export const carService = {
         const res = await fetch(
           `https://vpic.nhtsa.dot.gov/api/vehicles/GetModelsForMake/${cleanMake}?format=json`
         );
-
-        if (!res.ok) throw new Error("NHTSA error");
-
         const data: NhtsaResponse = await res.json();
-        models = [...new Set(data.Results.map(m => m.Model_Name))].slice(0, 15);
+        models = [...new Set(data.Results.map(m => m.Model_Name))].slice(0, 12);
       } catch {
         return [];
       }
     }
 
-    const allCars: CarSpec[] = [];
-
-    models.forEach(modelName => {
+    return models.map(modelName => {
       const seed = `${cleanMake}-${modelName}`;
       const rnd = seededRandom(seed);
+      const name = modelName.toUpperCase();
       const year = 2023;
 
-      const name = modelName.toUpperCase();
+      const isSport = ['M', 'AMG', 'RS', '911', 'TT'].some(k => name.includes(k));
+      const isSUV = ['X', 'Q', 'GL', 'TIGUAN', 'XC'].some(k => name.includes(k));
+      const isCompact = ['IBIZA', 'POLO', 'CLIO', '208', 'A1'].some(k => name.includes(k));
 
-      const isSports = ['M', 'AMG', 'RS', '911', 'R8', 'CAYMAN', 'Z4'].some(k => name.includes(k));
-      const isLuxury = ['SERIE 7', 'CLASE S', 'A8', 'PANAMERA', 'XC90'].some(k => name.includes(k));
-      const isSUV = ['X', 'Q', 'GL', 'SUV', 'TIGUAN', 'KODIAQ', 'ATECA', 'DUSTER', 'XC'].some(k => name.includes(k));
-      const isCompact = ['IBIZA', 'POLO', 'CLIO', '208', '500', 'A1', 'CORSA'].some(k => name.includes(k));
+      let hp = 120, consumption = 6, price = 25000, weight = 1400;
+      let traction: Traction = 'FWD';
 
-      let hp, consumption, price, weight, traction;
-
-      if (isSports) {
-        hp = 320 + rnd * 150;
-        consumption = 9 + rnd * 3;
-        price = 60000 + rnd * 25000;
-        weight = 1600;
+      if (isSport) {
+        hp = 300 + rnd * 120;
+        consumption = 9 + rnd * 2;
+        price = 55000 + rnd * 20000;
+        weight = 1550;
         traction = 'RWD';
-      } else if (isLuxury) {
-        hp = 250 + rnd * 100;
-        consumption = 8 + rnd * 2;
-        price = 65000 + rnd * 20000;
-        weight = 1800;
-        traction = 'AWD';
       } else if (isSUV) {
-        hp = 160 + rnd * 90;
-        consumption = 7 + rnd * 2.5;
-        price = 30000 + rnd * 15000;
+        hp = 170 + rnd * 80;
+        consumption = 7 + rnd * 2;
+        price = 32000 + rnd * 12000;
         weight = 1700;
-        traction = rnd > 0.65 ? 'AWD' : 'FWD';
+        traction = rnd > 0.6 ? 'AWD' : 'FWD';
       } else if (isCompact) {
         hp = 95 + rnd * 45;
-        consumption = 4.8 + rnd * 1.2;
-        price = 16000 + rnd * 7000;
+        consumption = 5 + rnd * 1;
+        price = 16000 + rnd * 6000;
         weight = 1150;
-        traction = 'FWD';
-      } else {
-        hp = 130 + rnd * 70;
-        consumption = 6 + rnd * 1.5;
-        price = 23000 + rnd * 12000;
-        weight = 1400;
-        traction = 'FWD';
       }
 
-      allCars.push({
+      const baseCar = {
         id: `${cleanMake}-${modelName.replace(/\s+/g, '-')}`,
         brand: cleanMake.toUpperCase(),
         model: name,
@@ -136,10 +113,15 @@ export const carService = {
         price: Math.round(price),
         traction,
         image: this.getCarImage(cleanMake, modelName, year)
-      });
-    });
+      };
 
-    return allCars;
+      return {
+        ...baseCar,
+        ecoScore: this.calculateEcoScore(baseCar),
+        sportScore: this.calculateSportScore(baseCar),
+        familyScore: this.calculateFamilyScore(baseCar)
+      };
+    });
   },
 
   calculateScore(car: CarSpec, prefs: Preferences): number {
@@ -158,5 +140,17 @@ export const carService = {
       score += 15;
 
     return Math.max(0, Math.min(100, Math.round(score)));
+  },
+
+  calculateEcoScore(car: Omit<CarSpec, 'ecoScore' | 'sportScore' | 'familyScore'>): number {
+    return Math.max(0, 100 - car.consumption * 10 - car.weight / 60);
+  },
+
+  calculateSportScore(car: Omit<CarSpec, 'ecoScore' | 'sportScore' | 'familyScore'>): number {
+    return Math.min(100, car.hp / 3 + (car.traction !== 'FWD' ? 20 : 0));
+  },
+
+  calculateFamilyScore(car: Omit<CarSpec, 'ecoScore' | 'sportScore' | 'familyScore'>): number {
+    return Math.min(100, (car.weight > 1500 ? 30 : 15) + (car.price < 35000 ? 30 : 15));
   }
 };
