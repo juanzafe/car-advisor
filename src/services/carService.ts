@@ -9,15 +9,15 @@ interface NhtsaResponse {
 }
 
 /* ============================
-   Base de datos europea local
+    Base de datos europea local
 ============================ */
 const EUROPEAN_MODELS: Record<string, string[]> = {
-  seat: ['Ibiza', 'Leon', 'Arona', 'Ateca', 'Tarraco', 'Formentor'],
-  renault: ['Clio', 'Megane', 'Captur', 'Kadjar', 'Scenic', 'Talisman'],
-  peugeot: ['208', '308', '2008', '3008', '5008', '508'],
-  citroen: ['C3', 'C4', 'C5 Aircross', 'Berlingo'],
+  seat: ['Ibiza', 'Leon', 'Arona', 'Ateca', 'Formentor'],
+  renault: ['Clio', 'Megane', 'Captur', 'Kadjar'],
+  peugeot: ['208', '308', '2008', '3008'],
+  citroen: ['C3', 'C4', 'C5 Aircross'],
   fiat: ['500', 'Panda', 'Tipo', '500X'],
-  skoda: ['Fabia', 'Octavia', 'Superb', 'Kamiq', 'Karoq', 'Kodiaq'],
+  skoda: ['Fabia', 'Octavia', 'Superb', 'Karoq', 'Kodiaq'],
   dacia: ['Sandero', 'Duster', 'Jogger'],
   bmw: ['Serie 1', 'Serie 3', 'Serie 5', 'X1', 'X3', 'X5', 'M3'],
   audi: ['A1', 'A3', 'A4', 'A6', 'Q3', 'Q5', 'TT'],
@@ -28,7 +28,7 @@ const EUROPEAN_MODELS: Record<string, string[]> = {
 };
 
 /* ============================
-   Random determinista
+    Random determinista
 ============================ */
 function seededRandom(seed: string): number {
   let hash = 0;
@@ -39,19 +39,39 @@ function seededRandom(seed: string): number {
   return Math.abs(hash % 1000) / 1000;
 }
 
+/* ============================
+    Servicio principal
+============================ */
+
+
+
 export const carService = {
-  getCarImage(make: string, model: string, year: number): string {
+  angles: ['01', '05', '09', '13', '17', '21', '25', '29'],
+  
+  // Lista de IDs de colores para rotar
+  colorList: ['pspc0001', 'pspc0002', 'pspc0003', 'pspc0004', 'pspc0015'],
+
+  getCarImage(make: string, model: string, year: number, angle: string = '01', color: string = 'pspc0001'): string {
+    const normalizedModel = model.toLowerCase().replace(/serie\s?/i, '').replace(/clase\s?/i, '').replace(/\s+/g, '');
     const url = new URL('https://cdn.imagin.studio/getimage');
+    
     url.searchParams.append('customer', 'hrjavascript-mastery');
     url.searchParams.append('make', make.toLowerCase());
-    url.searchParams.append('modelFamily', model.split(' ')[0].toLowerCase());
+    url.searchParams.append('modelFamily', normalizedModel);
     url.searchParams.append('zoomType', 'fullscreen');
     url.searchParams.append('modelYear', year.toString());
-    url.searchParams.append('angle', '01');
-    url.searchParams.append('paintId', 'grey');
+    url.searchParams.append('angle', angle);
+    url.searchParams.append('paintId', color);
+
     return url.toString();
   },
 
+
+
+
+  /* ============================
+      Fetch y generación de coches
+  ============================ */
   async fetchCars(make: string): Promise<CarSpec[]> {
     const cleanMake = make.trim().toLowerCase();
     let models: string[] = [];
@@ -64,7 +84,7 @@ export const carService = {
           `https://vpic.nhtsa.dot.gov/api/vehicles/GetModelsForMake/${cleanMake}?format=json`
         );
         const data: NhtsaResponse = await res.json();
-        models = [...new Set(data.Results.map(m => m.Model_Name))].slice(0, 12);
+        models = [...new Set(data.Results.map(m => m.Model_Name))].slice(0, 10);
       } catch {
         return [];
       }
@@ -80,7 +100,10 @@ export const carService = {
       const isSUV = ['X', 'Q', 'GL', 'TIGUAN', 'XC'].some(k => name.includes(k));
       const isCompact = ['IBIZA', 'POLO', 'CLIO', '208', 'A1'].some(k => name.includes(k));
 
-      let hp = 120, consumption = 6, price = 25000, weight = 1400;
+      let hp = 120;
+      let consumption = 6;
+      let price = 25000;
+      let weight = 1400;
       let traction: Traction = 'FWD';
 
       if (isSport) {
@@ -124,6 +147,9 @@ export const carService = {
     });
   },
 
+  /* ============================
+      Score principal (ranking)
+  ============================ */
   calculateScore(car: CarSpec, prefs: Preferences): number {
     let score = 100;
 
@@ -142,8 +168,11 @@ export const carService = {
     return Math.max(0, Math.min(100, Math.round(score)));
   },
 
+  /* ============================
+      Sub-scores (Radar chart)
+  ============================ */
   calculateEcoScore(car: Omit<CarSpec, 'ecoScore' | 'sportScore' | 'familyScore'>): number {
-    return Math.max(0, 100 - car.consumption * 10 - car.weight / 60);
+    return Math.max(0, Math.min(100, 100 - car.consumption * 10 - car.weight / 60));
   },
 
   calculateSportScore(car: Omit<CarSpec, 'ecoScore' | 'sportScore' | 'familyScore'>): number {
@@ -151,6 +180,10 @@ export const carService = {
   },
 
   calculateFamilyScore(car: Omit<CarSpec, 'ecoScore' | 'sportScore' | 'familyScore'>): number {
-    return Math.min(100, (car.weight > 1500 ? 30 : 15) + (car.price < 35000 ? 30 : 15));
+    return Math.min(
+      100,
+      (car.weight > 1500 ? 30 : 15) +
+      (car.price < 35000 ? 30 : 15)
+    );
   }
 };
