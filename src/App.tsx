@@ -27,7 +27,6 @@ export default function App() {
         setLoading(true);
         const results = await carService.fetchCars(query);
 
-        // DEBUG: ¿Cuántos llegan aquí?
         console.log('Total resultados en App:', results.length);
 
         const scoredCars = results
@@ -60,7 +59,7 @@ export default function App() {
 
       setCars(updatedCars);
     }
-  }, [preferences]); // Se lanza cada vez que mueves un slider
+  }, [preferences]);
 
   const addToCompare = useCallback((car: CarSpec) => {
     setSelected((prev) =>
