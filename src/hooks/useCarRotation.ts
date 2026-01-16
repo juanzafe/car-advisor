@@ -6,23 +6,40 @@ export const useCarRotation = (
   car: CarSpec,
   rotating: boolean,
   angleIndex: number,
-  setAngleIndex: (n: number | ((prev: number) => number)) => void
+  setAngleIndex: (n: number | ((prev: number) => number)) => void,
+  selectedColor: string = 'white'
 ) => {
   useEffect(() => {
-    // Precarga todos los ángulos del color actual y el siguiente en la lista para evitar lag
-    carService.colorList.forEach((c) => {
-      carService.angles.forEach((a) => {
-        const img = new Image();
-        img.src = carService.getCarImage(car.brand, car.model, car.year, a, c);
-      });
+    carService.colorList.forEach((color) => {
+      const img = new Image();
+      img.src = carService.getCarImage(
+        car.brand,
+        car.model,
+        car.year,
+        '01',
+        color
+      );
     });
-  }, [car.brand, car.model, car.year]);
+
+    carService.angles.forEach((angle) => {
+      const img = new Image();
+      img.src = carService.getCarImage(
+        car.brand,
+        car.model,
+        car.year,
+        angle,
+        selectedColor
+      );
+    });
+  }, [car.brand, car.model, car.year, selectedColor]);
 
   useEffect(() => {
     if (!rotating) return;
+
     const interval = setInterval(() => {
       setAngleIndex((prev) => (prev + 1) % carService.angles.length);
     }, 120);
+
     return () => clearInterval(interval);
   }, [rotating, setAngleIndex]);
 };

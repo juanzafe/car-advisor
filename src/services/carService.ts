@@ -47,14 +47,14 @@ export const carService = {
   angles: ['01', '05', '09', '13', '17', '21', '25', '29'],
 
   // Lista de IDs de colores para rotar
-  colorList: ['pspc0001', 'pspc0002', 'pspc0003', 'pspc0004', 'pspc0015'],
+  colorList: ['white', 'black', 'silver', 'blue', 'red'],
 
   getCarImage(
     make: string,
     model: string,
     year: number,
     angle: string = '01',
-    color: string = 'pspc0001'
+    color: string = 'white'
   ): string {
     const normalizedModel = model
       .toLowerCase()
@@ -63,13 +63,18 @@ export const carService = {
       .replace(/\s+/g, '');
     const url = new URL('https://cdn.imagin.studio/getimage');
 
-    url.searchParams.append('customer', 'hrjavascript-mastery');
+    // En tu carService.ts, dentro de getCarImage, cambia la línea del customer por esta:
+
+    url.searchParams.append(
+      'customer',
+      import.meta.env.VITE_IMAGIN_CUSTOMER_ID
+    );
     url.searchParams.append('make', make.toLowerCase());
     url.searchParams.append('modelFamily', normalizedModel);
     url.searchParams.append('zoomType', 'fullscreen');
     url.searchParams.append('modelYear', year.toString());
     url.searchParams.append('angle', angle);
-    url.searchParams.append('paintId', color);
+    url.searchParams.append('paintDescription', color);
 
     return url.toString();
   },

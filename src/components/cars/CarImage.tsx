@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useReducer } from 'react';
-import { RotateCw, Play, Pause, Palette } from 'lucide-react';
+import { RotateCw, Play, Pause } from 'lucide-react'; // Quitamos Palette si no la vamos a usar
 import { useCarRotation } from '../../hooks/useCarRotation';
 import { carService } from '../../services/carService';
 import type { CarSpec } from '../../types/car';
@@ -7,20 +7,17 @@ import type { CarSpec } from '../../types/car';
 type ImageState = {
   angleIndex: number;
   rotating: boolean;
-  colorIndex: number;
 };
 
 const initialState: ImageState = {
   angleIndex: 0,
   rotating: false,
-  colorIndex: 0,
 };
 
 type ImageAction =
   | { type: 'RESET' }
   | { type: 'SET_ANGLE_INDEX'; payload: number }
-  | { type: 'SET_ROTATING'; payload: boolean }
-  | { type: 'SET_COLOR_INDEX'; payload: number };
+  | { type: 'SET_ROTATING'; payload: boolean };
 
 const imageReducer = (state: ImageState, action: ImageAction): ImageState => {
   switch (action.type) {
@@ -30,30 +27,32 @@ const imageReducer = (state: ImageState, action: ImageAction): ImageState => {
       return { ...state, angleIndex: action.payload };
     case 'SET_ROTATING':
       return { ...state, rotating: action.payload };
-    case 'SET_COLOR_INDEX':
-      return { ...state, colorIndex: action.payload };
     default:
       return state;
   }
 };
 
-export const CarImage = ({ car }: { car: CarSpec }) => {
+export const CarImage = ({
+  car,
+  selectedColor,
+}: {
+  car: CarSpec;
+  selectedColor: string;
+}) => {
   const [state, dispatch] = useReducer(imageReducer, initialState);
-  const { angleIndex, rotating, colorIndex } = state;
+  const { angleIndex, rotating } = state;
   const prevCarIdRef = useRef(car.id);
 
-  // Obtenemos el ID del color actual de la lista
-  const currentColorId = carService.colorList[colorIndex];
-
+  // AHORA USAMOS selectedColor que viene del padre
   const currentImageUrl = useMemo(() => {
     return carService.getCarImage(
       car.brand,
       car.model,
       car.year,
       carService.angles[angleIndex],
-      currentColorId
+      selectedColor
     );
-  }, [car, angleIndex, currentColorId]);
+  }, [car, angleIndex, selectedColor]);
 
   useCarRotation(
     car,
@@ -62,7 +61,8 @@ export const CarImage = ({ car }: { car: CarSpec }) => {
     (index: number | ((prev: number) => number)) => {
       const newIndex = typeof index === 'function' ? index(angleIndex) : index;
       dispatch({ type: 'SET_ANGLE_INDEX', payload: newIndex });
-    }
+    },
+    selectedColor // Pasamos el color al hook para la precarga
   );
 
   useEffect(() => {
@@ -72,19 +72,13 @@ export const CarImage = ({ car }: { car: CarSpec }) => {
     }
   }, [car.id]);
 
-  const toggleNextColor = () => {
-    dispatch({
-      type: 'SET_COLOR_INDEX',
-      payload: (colorIndex + 1) % carService.colorList.length,
-    });
-  };
-
   return (
     <div className="relative group bg-slate-50 h-48 flex items-center justify-center overflow-hidden rounded-t-xl">
       <img
         src={currentImageUrl}
         alt={car.model}
-        key={`${car.id}-${currentColorId}-${angleIndex}`}
+        // El key ahora depende de selectedColor para que React sepa que debe refrescar la imagen
+        key={`${car.id}-${selectedColor}-${angleIndex}`}
         className="h-40 w-full object-contain p-2 relative z-0 transition-opacity duration-200"
       />
 
@@ -127,17 +121,6 @@ export const CarImage = ({ car }: { car: CarSpec }) => {
             className="p-1.5 hover:bg-slate-100 rounded-full text-slate-700"
           >
             <RotateCw size={18} />
-          </button>
-
-          <div className="w-px h-4 bg-slate-300 mx-1" />
-
-          {/* Botón único de paleta que rota colores */}
-          <button
-            onClick={toggleNextColor}
-            className="p-1.5 hover:bg-slate-100 rounded-full text-slate-700 transition-colors"
-            title="Siguiente color"
-          >
-            <Palette size={18} />
           </button>
         </div>
       </div>

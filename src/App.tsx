@@ -47,7 +47,6 @@ export default function App() {
     [preferences]
   );
 
-  // EFECTO DINÁMICO: Recalcula el score cuando cambias los sliders sin recargar la API
   useEffect(() => {
     if (cars.length > 0) {
       const updatedCars = cars
@@ -78,6 +77,10 @@ export default function App() {
       <main className="max-w-7xl mx-auto p-6 space-y-8">
         <SearchBar onSearch={search} isLoading={loading} />
 
+        {selected.length > 0 && (
+          <ComparisonGrid cars={selected} onRemove={removeFromCompare} />
+        )}
+
         <PreferenceFilters
           preferences={preferences}
           setPreferences={setPreferences}
@@ -89,10 +92,6 @@ export default function App() {
           onCompare={addToCompare}
           selectedIds={selected.map((c) => c.id)}
         />
-
-        {selected.length > 0 && (
-          <ComparisonGrid cars={selected} onRemove={removeFromCompare} />
-        )}
       </main>
     </>
   );
