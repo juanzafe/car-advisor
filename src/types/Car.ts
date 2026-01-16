@@ -12,8 +12,7 @@ export interface CarSpec {
   traction: Traction;
   image: string;
 
-  // Scores
-  score?: number;        // score según preferencias del usuario
+  score?: number;
   ecoScore: number;
   sportScore: number;
   familyScore: number;

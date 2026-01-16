@@ -10,13 +10,13 @@ export const useCarRotation = (
 ) => {
   useEffect(() => {
     // Precarga todos los ángulos del color actual y el siguiente en la lista para evitar lag
-    carService.colorList.forEach(c => {
-      carService.angles.forEach(a => {
+    carService.colorList.forEach((c) => {
+      carService.angles.forEach((a) => {
         const img = new Image();
         img.src = carService.getCarImage(car.brand, car.model, car.year, a, c);
       });
     });
-  }, [car.brand, car.model]);
+  }, [car.brand, car.model, car.year]);
 
   useEffect(() => {
     if (!rotating) return;

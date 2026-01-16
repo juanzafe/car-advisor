@@ -27,7 +27,7 @@ export function SearchBar({ onSearch, isLoading = false }: SearchBarProps) {
         type="text"
         placeholder="Buscar marca (BMW, Audi, Toyota...)"
         value={query}
-        onChange={e => setQuery(e.target.value)}
+        onChange={(e) => setQuery(e.target.value)}
         disabled={isLoading}
         className="flex-1 outline-none text-slate-700 disabled:bg-transparent"
       />

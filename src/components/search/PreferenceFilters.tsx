@@ -6,7 +6,10 @@ interface PreferenceFiltersProps {
   setPreferences: (prefs: Preferences) => void;
 }
 
-export const PreferenceFilters = ({ preferences, setPreferences }: PreferenceFiltersProps) => {
+export const PreferenceFilters = ({
+  preferences,
+  setPreferences,
+}: PreferenceFiltersProps) => {
   const handleChange = (key: keyof Preferences, value: string | number) => {
     setPreferences({ ...preferences, [key]: value });
   };
@@ -22,11 +25,18 @@ export const PreferenceFilters = ({ preferences, setPreferences }: PreferenceFil
         {/* Potencia */}
         <div className="space-y-3">
           <div className="flex justify-between items-center text-sm font-medium">
-            <span className="flex items-center gap-2 text-slate-500"><Zap size={16}/> Potencia mín.</span>
-            <span className="text-blue-600 font-bold">{preferences.minPower} CV</span>
+            <span className="flex items-center gap-2 text-slate-500">
+              <Zap size={16} /> Potencia mín.
+            </span>
+            <span className="text-blue-600 font-bold">
+              {preferences.minPower} CV
+            </span>
           </div>
-          <input 
-            type="range" min="50" max="600" step="10"
+          <input
+            type="range"
+            min="50"
+            max="600"
+            step="10"
             value={preferences.minPower}
             onChange={(e) => handleChange('minPower', Number(e.target.value))}
             className="w-full h-1.5 bg-slate-100 rounded-lg appearance-none cursor-pointer accent-blue-600"
@@ -36,13 +46,22 @@ export const PreferenceFilters = ({ preferences, setPreferences }: PreferenceFil
         {/* Consumo */}
         <div className="space-y-3">
           <div className="flex justify-between items-center text-sm font-medium">
-            <span className="flex items-center gap-2 text-slate-500"><Fuel size={16}/> Consumo máx.</span>
-            <span className="text-blue-600 font-bold">{preferences.maxConsumption} L</span>
+            <span className="flex items-center gap-2 text-slate-500">
+              <Fuel size={16} /> Consumo máx.
+            </span>
+            <span className="text-blue-600 font-bold">
+              {preferences.maxConsumption} L
+            </span>
           </div>
-          <input 
-            type="range" min="3" max="20" step="0.5"
+          <input
+            type="range"
+            min="3"
+            max="20"
+            step="0.5"
             value={preferences.maxConsumption}
-            onChange={(e) => handleChange('maxConsumption', Number(e.target.value))}
+            onChange={(e) =>
+              handleChange('maxConsumption', Number(e.target.value))
+            }
             className="w-full h-1.5 bg-slate-100 rounded-lg appearance-none cursor-pointer accent-blue-600"
           />
         </div>
@@ -50,11 +69,18 @@ export const PreferenceFilters = ({ preferences, setPreferences }: PreferenceFil
         {/* Presupuesto */}
         <div className="space-y-3">
           <div className="flex justify-between items-center text-sm font-medium">
-            <span className="flex items-center gap-2 text-slate-500"><Wallet size={16}/> Presupuesto</span>
-            <span className="text-blue-600 font-bold">{preferences.maxPrice.toLocaleString()}€</span>
+            <span className="flex items-center gap-2 text-slate-500">
+              <Wallet size={16} /> Presupuesto
+            </span>
+            <span className="text-blue-600 font-bold">
+              {preferences.maxPrice.toLocaleString()}€
+            </span>
           </div>
-          <input 
-            type="range" min="10000" max="200000" step="5000"
+          <input
+            type="range"
+            min="10000"
+            max="200000"
+            step="5000"
             value={preferences.maxPrice}
             onChange={(e) => handleChange('maxPrice', Number(e.target.value))}
             className="w-full h-1.5 bg-slate-100 rounded-lg appearance-none cursor-pointer accent-blue-600"
@@ -64,9 +90,11 @@ export const PreferenceFilters = ({ preferences, setPreferences }: PreferenceFil
         {/* Tracción */}
         <div className="space-y-3">
           <div className="flex justify-between items-center text-sm font-medium text-slate-500 mb-1">
-            <span className="flex items-center gap-2"><Gauge size={16}/> Tracción ideal</span>
+            <span className="flex items-center gap-2">
+              <Gauge size={16} /> Tracción ideal
+            </span>
           </div>
-          <select 
+          <select
             value={preferences.preferredTraction}
             onChange={(e) => handleChange('preferredTraction', e.target.value)}
             className="w-full p-2 bg-slate-50 border border-slate-200 rounded-xl text-sm font-semibold text-slate-700 outline-none focus:border-blue-500 transition-colors"

@@ -5,7 +5,7 @@ import {
   PolarAngleAxis,
   PolarRadiusAxis,
   Radar,
-  ResponsiveContainer
+  ResponsiveContainer,
 } from 'recharts';
 import type { CarSpec } from '../../types/car';
 
@@ -16,7 +16,7 @@ const COLORS = [
   '#2563eb', // azul
   '#16a34a', // verde
   '#dc2626', // rojo
-  '#7c3aed'  // morado
+  '#7c3aed', // morado
 ];
 
 /* ============================
@@ -26,18 +26,20 @@ function getComparisonWinners(cars: CarSpec[]) {
   return {
     overall: [...cars].sort(
       (a, b) =>
-        (b.ecoScore + b.sportScore + b.familyScore) -
+        b.ecoScore +
+        b.sportScore +
+        b.familyScore -
         (a.ecoScore + a.sportScore + a.familyScore)
     )[0],
     eco: [...cars].sort((a, b) => b.ecoScore - a.ecoScore)[0],
     sport: [...cars].sort((a, b) => b.sportScore - a.sportScore)[0],
-    family: [...cars].sort((a, b) => b.familyScore - a.familyScore)[0]
+    family: [...cars].sort((a, b) => b.familyScore - a.familyScore)[0],
   };
 }
 
 export const ComparisonGrid = ({
   cars,
-  onRemove
+  onRemove,
 }: {
   cars: CarSpec[];
   onRemove: (id: string) => void;
@@ -52,15 +54,22 @@ export const ComparisonGrid = ({
 
       {/* ===== CONCLUSIÓN ===== */}
       <div className="grid md:grid-cols-4 gap-4">
-        <WinnerCard icon={<Trophy />} label="Mejor opción" car={winners.overall} />
+        <WinnerCard
+          icon={<Trophy />}
+          label="Mejor opción"
+          car={winners.overall}
+        />
         <WinnerCard icon={<Leaf />} label="Más eficiente" car={winners.eco} />
         <WinnerCard icon={<Zap />} label="Más deportivo" car={winners.sport} />
-        <WinnerCard icon={<Users />} label="Mejor familiar" car={winners.family} />
+        <WinnerCard
+          icon={<Users />}
+          label="Mejor familiar"
+          car={winners.family}
+        />
       </div>
 
       {/* ===== RADAR + LEYENDA ===== */}
       <div className="bg-white rounded-xl p-6 shadow-sm grid md:grid-cols-4 gap-6">
-        
         {/* Radar */}
         <div className="md:col-span-3 h-80">
           <ResponsiveContainer width="100%" height="100%">
@@ -101,8 +110,11 @@ export const ComparisonGrid = ({
 
       {/* ===== TARJETAS DE COCHES ===== */}
       <div className="grid md:grid-cols-3 gap-6">
-        {cars.map(c => (
-          <div key={c.id} className="bg-white p-4 rounded-xl relative shadow-sm">
+        {cars.map((c) => (
+          <div
+            key={c.id}
+            className="bg-white p-4 rounded-xl relative shadow-sm"
+          >
             <button
               onClick={() => onRemove(c.id)}
               className="absolute top-2 right-2 text-red-500 hover:scale-110 transition"
@@ -131,16 +143,16 @@ function buildRadarData(cars: CarSpec[]) {
   return [
     {
       metric: 'Eco',
-      ...Object.fromEntries(cars.map(c => [c.id, Math.round(c.ecoScore)]))
+      ...Object.fromEntries(cars.map((c) => [c.id, Math.round(c.ecoScore)])),
     },
     {
       metric: 'Sport',
-      ...Object.fromEntries(cars.map(c => [c.id, Math.round(c.sportScore)]))
+      ...Object.fromEntries(cars.map((c) => [c.id, Math.round(c.sportScore)])),
     },
     {
       metric: 'Family',
-      ...Object.fromEntries(cars.map(c => [c.id, Math.round(c.familyScore)]))
-    }
+      ...Object.fromEntries(cars.map((c) => [c.id, Math.round(c.familyScore)])),
+    },
   ];
 }
 
@@ -150,7 +162,7 @@ function buildRadarData(cars: CarSpec[]) {
 const WinnerCard = ({
   icon,
   label,
-  car
+  car,
 }: {
   icon: React.ReactNode;
   label: string;
@@ -166,4 +178,3 @@ const WinnerCard = ({
     </div>
   </div>
 );
- 

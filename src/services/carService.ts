@@ -1,4 +1,4 @@
-import type { CarSpec, Preferences, Traction } from "../types/car";
+import type { CarSpec, Preferences, Traction } from '../types/car';
 
 interface NhtsaResponse {
   Results: Array<{
@@ -24,7 +24,7 @@ const EUROPEAN_MODELS: Record<string, string[]> = {
   mercedes: ['Clase A', 'Clase C', 'Clase E', 'GLA', 'GLC'],
   volkswagen: ['Polo', 'Golf', 'Passat', 'Tiguan'],
   volvo: ['XC40', 'XC60', 'S60'],
-  porsche: ['911', 'Cayenne', 'Macan']
+  porsche: ['911', 'Cayenne', 'Macan'],
 };
 
 /* ============================
@@ -43,18 +43,26 @@ function seededRandom(seed: string): number {
     Servicio principal
 ============================ */
 
-
-
 export const carService = {
   angles: ['01', '05', '09', '13', '17', '21', '25', '29'],
-  
+
   // Lista de IDs de colores para rotar
   colorList: ['pspc0001', 'pspc0002', 'pspc0003', 'pspc0004', 'pspc0015'],
 
-  getCarImage(make: string, model: string, year: number, angle: string = '01', color: string = 'pspc0001'): string {
-    const normalizedModel = model.toLowerCase().replace(/serie\s?/i, '').replace(/clase\s?/i, '').replace(/\s+/g, '');
+  getCarImage(
+    make: string,
+    model: string,
+    year: number,
+    angle: string = '01',
+    color: string = 'pspc0001'
+  ): string {
+    const normalizedModel = model
+      .toLowerCase()
+      .replace(/serie\s?/i, '')
+      .replace(/clase\s?/i, '')
+      .replace(/\s+/g, '');
     const url = new URL('https://cdn.imagin.studio/getimage');
-    
+
     url.searchParams.append('customer', 'hrjavascript-mastery');
     url.searchParams.append('make', make.toLowerCase());
     url.searchParams.append('modelFamily', normalizedModel);
@@ -65,9 +73,6 @@ export const carService = {
 
     return url.toString();
   },
-
-
-
 
   /* ============================
       Fetch y generación de coches
@@ -84,21 +89,30 @@ export const carService = {
           `https://vpic.nhtsa.dot.gov/api/vehicles/GetModelsForMake/${cleanMake}?format=json`
         );
         const data: NhtsaResponse = await res.json();
-        models = [...new Set(data.Results.map(m => m.Model_Name))].slice(0, 10);
+        models = [...new Set(data.Results.map((m) => m.Model_Name))].slice(
+          0,
+          10
+        );
       } catch {
         return [];
       }
     }
 
-    return models.map(modelName => {
+    return models.map((modelName) => {
       const seed = `${cleanMake}-${modelName}`;
       const rnd = seededRandom(seed);
       const name = modelName.toUpperCase();
       const year = 2023;
 
-      const isSport = ['M', 'AMG', 'RS', '911', 'TT'].some(k => name.includes(k));
-      const isSUV = ['X', 'Q', 'GL', 'TIGUAN', 'XC'].some(k => name.includes(k));
-      const isCompact = ['IBIZA', 'POLO', 'CLIO', '208', 'A1'].some(k => name.includes(k));
+      const isSport = ['M', 'AMG', 'RS', '911', 'TT'].some((k) =>
+        name.includes(k)
+      );
+      const isSUV = ['X', 'Q', 'GL', 'TIGUAN', 'XC'].some((k) =>
+        name.includes(k)
+      );
+      const isCompact = ['IBIZA', 'POLO', 'CLIO', '208', 'A1'].some((k) =>
+        name.includes(k)
+      );
 
       let hp = 120;
       let consumption = 6;
@@ -135,14 +149,14 @@ export const carService = {
         weight,
         price: Math.round(price),
         traction,
-        image: this.getCarImage(cleanMake, modelName, year)
+        image: this.getCarImage(cleanMake, modelName, year),
       };
 
       return {
         ...baseCar,
         ecoScore: this.calculateEcoScore(baseCar),
         sportScore: this.calculateSportScore(baseCar),
-        familyScore: this.calculateFamilyScore(baseCar)
+        familyScore: this.calculateFamilyScore(baseCar),
       };
     });
   },
@@ -153,8 +167,7 @@ export const carService = {
   calculateScore(car: CarSpec, prefs: Preferences): number {
     let score = 100;
 
-    if (car.hp < prefs.minPower)
-      score -= (prefs.minPower - car.hp) * 0.4;
+    if (car.hp < prefs.minPower) score -= (prefs.minPower - car.hp) * 0.4;
 
     if (car.consumption > prefs.maxConsumption)
       score -= (car.consumption - prefs.maxConsumption) * 8;
@@ -162,7 +175,10 @@ export const carService = {
     if (car.price > prefs.maxPrice)
       score -= ((car.price - prefs.maxPrice) / 1000) * 2;
 
-    if (prefs.preferredTraction !== 'any' && car.traction === prefs.preferredTraction)
+    if (
+      prefs.preferredTraction !== 'any' &&
+      car.traction === prefs.preferredTraction
+    )
       score += 15;
 
     return Math.max(0, Math.min(100, Math.round(score)));
@@ -171,19 +187,27 @@ export const carService = {
   /* ============================
       Sub-scores (Radar chart)
   ============================ */
-  calculateEcoScore(car: Omit<CarSpec, 'ecoScore' | 'sportScore' | 'familyScore'>): number {
-    return Math.max(0, Math.min(100, 100 - car.consumption * 10 - car.weight / 60));
+  calculateEcoScore(
+    car: Omit<CarSpec, 'ecoScore' | 'sportScore' | 'familyScore'>
+  ): number {
+    return Math.max(
+      0,
+      Math.min(100, 100 - car.consumption * 10 - car.weight / 60)
+    );
   },
 
-  calculateSportScore(car: Omit<CarSpec, 'ecoScore' | 'sportScore' | 'familyScore'>): number {
+  calculateSportScore(
+    car: Omit<CarSpec, 'ecoScore' | 'sportScore' | 'familyScore'>
+  ): number {
     return Math.min(100, car.hp / 3 + (car.traction !== 'FWD' ? 20 : 0));
   },
 
-  calculateFamilyScore(car: Omit<CarSpec, 'ecoScore' | 'sportScore' | 'familyScore'>): number {
+  calculateFamilyScore(
+    car: Omit<CarSpec, 'ecoScore' | 'sportScore' | 'familyScore'>
+  ): number {
     return Math.min(
       100,
-      (car.weight > 1500 ? 30 : 15) +
-      (car.price < 35000 ? 30 : 15)
+      (car.weight > 1500 ? 30 : 15) + (car.price < 35000 ? 30 : 15)
     );
-  }
+  },
 };

@@ -12,58 +12,64 @@ export default function App() {
   const [cars, setCars] = useState<CarSpec[]>([]);
   const [selected, setSelected] = useState<CarSpec[]>([]);
   const [loading, setLoading] = useState(false);
-  const [lastQuery, setLastQuery] = useState(""); // Guardamos la última búsqueda
 
   const [preferences, setPreferences] = useState<Preferences>({
     minPower: 150,
     maxConsumption: 8,
     maxWeight: 1600,
     maxPrice: 40000,
-    preferredTraction: 'any'
+    preferredTraction: 'any',
   });
 
-  const search = useCallback(async (query: string) => {
-  try {
-    setLoading(true);
-    const results = await carService.fetchCars(query);
-    
-    // DEBUG: ¿Cuántos llegan aquí?
-    console.log("Total resultados en App:", results.length);
+  const search = useCallback(
+    async (query: string) => {
+      try {
+        setLoading(true);
+        const results = await carService.fetchCars(query);
 
-    const scoredCars = results.map(car => ({
-      ...car,
-      score: carService.calculateScore(car, preferences)
-    })).sort((a, b) => (b.score ?? 0) - (a.score ?? 0));
+        // DEBUG: ¿Cuántos llegan aquí?
+        console.log('Total resultados en App:', results.length);
 
-      setCars(scoredCars);
-    } catch (error) {
-      console.error('Error fetching cars', error);
-      setCars([]);
-    } finally {
-      setLoading(false);
-    }
-  }, [preferences]);
+        const scoredCars = results
+          .map((car) => ({
+            ...car,
+            score: carService.calculateScore(car, preferences),
+          }))
+          .sort((a, b) => (b.score ?? 0) - (a.score ?? 0));
+
+        setCars(scoredCars);
+      } catch (error) {
+        console.error('Error fetching cars', error);
+        setCars([]);
+      } finally {
+        setLoading(false);
+      }
+    },
+    [preferences]
+  );
 
   // EFECTO DINÁMICO: Recalcula el score cuando cambias los sliders sin recargar la API
   useEffect(() => {
     if (cars.length > 0) {
-      const updatedCars = cars.map(car => ({
-        ...car,
-        score: carService.calculateScore(car, preferences)
-      })).sort((a, b) => (b.score ?? 0) - (a.score ?? 0));
-      
+      const updatedCars = cars
+        .map((car) => ({
+          ...car,
+          score: carService.calculateScore(car, preferences),
+        }))
+        .sort((a, b) => (b.score ?? 0) - (a.score ?? 0));
+
       setCars(updatedCars);
     }
   }, [preferences]); // Se lanza cada vez que mueves un slider
 
   const addToCompare = useCallback((car: CarSpec) => {
-    setSelected(prev =>
-      prev.some(c => c.id === car.id) ? prev : [...prev, car]
+    setSelected((prev) =>
+      prev.some((c) => c.id === car.id) ? prev : [...prev, car]
     );
   }, []);
 
   const removeFromCompare = useCallback((id: string) => {
-    setSelected(prev => prev.filter(c => c.id !== id));
+    setSelected((prev) => prev.filter((c) => c.id !== id));
   }, []);
 
   return (
@@ -73,23 +79,20 @@ export default function App() {
       <main className="max-w-7xl mx-auto p-6 space-y-8">
         <SearchBar onSearch={search} isLoading={loading} />
 
-        <PreferenceFilters 
-          preferences={preferences} 
-          setPreferences={setPreferences} 
+        <PreferenceFilters
+          preferences={preferences}
+          setPreferences={setPreferences}
         />
 
         <CarsGrid
           cars={cars}
           isLoading={loading}
           onCompare={addToCompare}
-          selectedIds={selected.map(c => c.id)}
+          selectedIds={selected.map((c) => c.id)}
         />
 
         {selected.length > 0 && (
-          <ComparisonGrid
-            cars={selected}
-            onRemove={removeFromCompare}
-          />
+          <ComparisonGrid cars={selected} onRemove={removeFromCompare} />
         )}
       </main>
     </>

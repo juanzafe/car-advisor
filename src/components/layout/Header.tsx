@@ -5,7 +5,7 @@ export const Header = ({ selectedCount }: { selectedCount: number }) => (
     <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
       <h1 className="text-2xl font-black flex items-center gap-2">
         <Car className="text-blue-600" />
-        CarAdvisor Pro
+        CarAdvisor Pro TE AMO
       </h1>
       <div className="font-semibold text-blue-600">
         Comparando: {selectedCount}

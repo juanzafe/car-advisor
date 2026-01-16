@@ -24,25 +24,37 @@ export const CarCard = ({
 
     <div className="p-5 space-y-4">
       <div>
-        <h3 className="font-bold text-lg leading-tight">{car.brand} {car.model}</h3>
+        <h3 className="font-bold text-lg leading-tight">
+          {car.brand} {car.model}
+        </h3>
         <p className="text-sm text-slate-500">{car.year}</p>
       </div>
 
       <div className="text-sm space-y-2 border-y border-slate-50 py-3">
         <div className="flex justify-between items-center text-slate-600">
-          <span className="flex items-center gap-2"><Zap size={16} className="text-blue-500"/> Potencia</span>
+          <span className="flex items-center gap-2">
+            <Zap size={16} className="text-blue-500" /> Potencia
+          </span>
           <span className="font-semibold text-slate-900">{car.hp} CV</span>
         </div>
         <div className="flex justify-between items-center text-slate-600">
-          <span className="flex items-center gap-2"><Fuel size={16} className="text-blue-500"/> Consumo</span>
-          <span className="font-semibold text-slate-900">{car.consumption} L</span>
+          <span className="flex items-center gap-2">
+            <Fuel size={16} className="text-blue-500" /> Consumo
+          </span>
+          <span className="font-semibold text-slate-900">
+            {car.consumption} L
+          </span>
         </div>
         <div className="flex justify-between items-center text-slate-600">
-          <span className="flex items-center gap-2"><Gauge size={16} className="text-blue-500"/> Peso</span>
+          <span className="flex items-center gap-2">
+            <Gauge size={16} className="text-blue-500" /> Peso
+          </span>
           <span className="font-semibold text-slate-900">{car.weight} kg</span>
         </div>
         <div className="flex justify-between items-center text-slate-600">
-          <span className="flex items-center gap-2"><Car size={16} className="text-blue-500"/> Tracción</span>
+          <span className="flex items-center gap-2">
+            <Car size={16} className="text-blue-500" /> Tracción
+          </span>
           <span className="font-semibold text-slate-900">{car.traction}</span>
         </div>
       </div>
@@ -51,8 +63,8 @@ export const CarCard = ({
         onClick={onCompare}
         disabled={isSelected}
         className={`w-full py-2.5 rounded-xl font-bold transition-all duration-200 ${
-          isSelected 
-            ? 'bg-slate-100 text-slate-400 cursor-not-allowed' 
+          isSelected
+            ? 'bg-slate-100 text-slate-400 cursor-not-allowed'
             : 'bg-green-600 text-white hover:bg-green-700 shadow-sm active:scale-[0.98]'
         }`}
       >
