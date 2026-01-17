@@ -1,5 +1,4 @@
 import { initializeApp } from 'firebase/app';
-import { getAnalytics } from 'firebase/analytics';
 import { getFirestore } from 'firebase/firestore';
 import { signInWithPopup, getAuth, GoogleAuthProvider } from 'firebase/auth';
 
@@ -14,22 +13,15 @@ const firebaseConfig = {
 };
 
 const app = initializeApp(firebaseConfig);
-
-// Verificación de entorno para Analytics (evita errores en SSR o tests)
-if (typeof window !== 'undefined') {
-  getAnalytics(app);
-}
-
 export const db = getFirestore(app);
 export const auth = getAuth(app);
-export const googleProvider = new GoogleAuthProvider();
+const googleProvider = new GoogleAuthProvider();
 
 export const loginWithGoogle = async () => {
   try {
     const result = await signInWithPopup(auth, googleProvider);
-    console.log('Usuario logueado:', result.user.displayName);
     return result.user;
   } catch (error) {
-    console.error('Error al iniciar sesión con Google:', error);
+    console.error('Error al iniciar sesión:', error);
   }
 };

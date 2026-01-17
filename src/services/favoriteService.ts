@@ -1,5 +1,12 @@
 import { db } from '../lib/firebase';
-import { doc, setDoc, deleteDoc, getDoc } from 'firebase/firestore';
+import {
+  doc,
+  setDoc,
+  deleteDoc,
+  getDoc,
+  collection,
+  getDocs,
+} from 'firebase/firestore';
 import type { CarSpec } from '../types/car';
 
 // Definimos una interfaz para los datos que guardamos
@@ -64,5 +71,19 @@ export const favoriteService = {
     const favRef = doc(db, 'users', userId, 'favorites', carId);
     const snap = await getDoc(favRef);
     return snap.exists() ? (snap.data() as FavoriteRecord) : null;
+  },
+
+  async getFavorites(
+    userId: string | null | undefined
+  ): Promise<FavoriteRecord[]> {
+    if (userId) {
+      // Si hay usuario, traemos de Firebase
+      const favsRef = collection(db, 'users', userId, 'favorites');
+      const snapshot = await getDocs(favsRef);
+      return snapshot.docs.map((doc) => doc.data() as FavoriteRecord);
+    } else {
+      // Si no, traemos del almacenamiento local
+      return JSON.parse(localStorage.getItem('local_favorites') || '[]');
+    }
   },
 };
