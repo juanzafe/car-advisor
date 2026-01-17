@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Zap, Fuel, Gauge, Car, Star } from 'lucide-react';
+import { Zap, Fuel, Gauge, Car, Star, Heart } from 'lucide-react';
 import { CarImage } from './CarImage';
 import { carService } from '../../services/carService';
 import type { CarSpec } from '../../types/car';
@@ -14,22 +14,53 @@ export const CarCard = ({
   isSelected: boolean;
 }) => {
   const [selectedColor, setSelectedColor] = useState('white');
+  const [isFavorite, setIsFavorite] = useState(false);
+  const [loadingFav, setLoadingFav] = useState(false);
+
+  const handleFavoriteClick = async () => {
+    setLoadingFav(true);
+    try {
+      if (isFavorite) {
+        // Remove from favorites
+        setIsFavorite(false);
+      } else {
+        // Add to favorites
+        setIsFavorite(true);
+      }
+    } catch (error) {
+      console.error('Error toggling favorite:', error);
+    } finally {
+      setLoadingFav(false);
+    }
+  };
 
   return (
     <div className="bg-white rounded-2xl shadow-md overflow-hidden relative border border-slate-100 group">
-      {/* Badge de Score */}
       {car.score !== undefined && (
         <div className="absolute top-3 right-3 z-10 bg-yellow-500 text-white px-3 py-1 rounded-full text-sm font-bold flex items-center gap-1 shadow-sm">
           <Star size={14} fill="currentColor" />
           <span>{car.score}%</span>
         </div>
       )}
+      <button
+        onClick={handleFavoriteClick}
+        disabled={loadingFav}
+        className="absolute top-3 left-3 z-20 p-2 bg-white/90 backdrop-blur-sm rounded-full shadow-sm hover:bg-white transition-all active:scale-90"
+        title={isFavorite ? 'Quitar de favoritos' : 'Añadir a favoritos'}
+      >
+        <Heart
+          size={20}
+          className={`transition-colors ${
+            isFavorite
+              ? 'fill-red-500 text-red-500'
+              : 'text-slate-400 hover:text-red-500'
+          } ${loadingFav ? 'animate-pulse' : ''}`}
+        />
+      </button>
 
-      {/* Pasamos el color seleccionado a la imagen */}
       <CarImage car={car} selectedColor={selectedColor} />
 
       <div className="p-5 space-y-4">
-        {/* Cabecera y Selector de Colores */}
         <div className="flex justify-between items-start">
           <div>
             <h3 className="font-bold text-lg leading-tight uppercase">
@@ -55,7 +86,6 @@ export const CarCard = ({
           </div>
         </div>
 
-        {/* LISTADO DE SPECS CON ICONOS LUCIDE */}
         <div className="text-sm space-y-2 border-y border-slate-50 py-3">
           <div className="flex justify-between items-center text-slate-600">
             <span className="flex items-center gap-2">
