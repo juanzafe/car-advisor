@@ -4,17 +4,22 @@ import { getFirestore } from 'firebase/firestore';
 import { signInWithPopup, getAuth, GoogleAuthProvider } from 'firebase/auth';
 
 const firebaseConfig = {
-  apiKey: 'AIzaSyDr3WeyypBs7ccQAJAYqA9fLic1h85Sewk',
-  authDomain: 'car-advisor-pro.firebaseapp.com',
-  projectId: 'car-advisor-pro',
-  storageBucket: 'car-advisor-pro.firebasestorage.app',
-  messagingSenderId: '595109125478',
-  appId: '1:595109125478:web:c462a594c4f74406357ca7',
-  measurementId: 'G-7GYR1ZHXVM',
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+  appId: import.meta.env.VITE_FIREBASE_APP_ID,
+  measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID,
 };
 
 const app = initializeApp(firebaseConfig);
-getAnalytics(app);
+
+// Verificación de entorno para Analytics (evita errores en SSR o tests)
+if (typeof window !== 'undefined') {
+  getAnalytics(app);
+}
+
 export const db = getFirestore(app);
 export const auth = getAuth(app);
 export const googleProvider = new GoogleAuthProvider();
