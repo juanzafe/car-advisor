@@ -93,7 +93,7 @@ export default function App() {
   return (
     <div className="min-h-screen bg-slate-50/50">
       {/* Pasamos el conteo de seleccionados al Header donde está el Login */}
-      <Header selectedCount={selected.length} />
+      <Header />
 
       <main className="max-w-7xl mx-auto p-6 space-y-8">
         {/* Banner de Bienvenida Personalizado */}
@@ -120,7 +120,7 @@ export default function App() {
                 <Star size={20} fill="white" />
               </div>
               <p className="font-medium text-center md:text-left">
-                Inicia sesión para guardar tus búsquedas y coches favoritos.
+                Inicia sesión para guardar tus coches favoritos.
               </p>
             </div>
             <button

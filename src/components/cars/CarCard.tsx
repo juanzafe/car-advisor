@@ -1,8 +1,11 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Zap, Fuel, Gauge, Car, Star, Heart } from 'lucide-react';
 import { CarImage } from './CarImage';
 import { carService } from '../../services/carService';
 import type { CarSpec } from '../../types/car';
+import { favoriteService } from '../../services/favoriteService';
+import { auth } from '../../lib/firebase';
+import { useAuthState } from 'react-firebase-hooks/auth';
 
 export const CarCard = ({
   car,
@@ -15,24 +18,72 @@ export const CarCard = ({
 }) => {
   const [selectedColor, setSelectedColor] = useState('white');
   const [isFavorite, setIsFavorite] = useState(false);
-  const [loadingFav, setLoadingFav] = useState(false);
 
+  const [user] = useAuthState(auth);
+
+  // 1. Manejar el click en el corazón (Me gusta)
   const handleFavoriteClick = async () => {
-    setLoadingFav(true);
+    const originalState = isFavorite;
+    setIsFavorite(!originalState);
+
     try {
-      if (isFavorite) {
-        // Remove from favorites
-        setIsFavorite(false);
+      if (originalState) {
+        await favoriteService.removeFavorite(user?.uid, car.id);
       } else {
-        // Add to favorites
-        setIsFavorite(true);
+        // Al dar me gusta, guardamos también el color que esté seleccionado en ese momento
+        await favoriteService.addFavorite(user?.uid, car, selectedColor);
       }
     } catch (error) {
-      console.error('Error toggling favorite:', error);
-    } finally {
-      setLoadingFav(false);
+      setIsFavorite(originalState);
+      console.error('Error al gestionar favorito:', error);
     }
   };
+
+  // 2. Manejar el cambio de color y guardarlo si ya es favorito
+  const handleColorChange = async (color: string) => {
+    setSelectedColor(color);
+
+    // Si el coche ya es favorito, actualizamos el color en la base de datos/localstorage
+    if (isFavorite) {
+      try {
+        await favoriteService.addFavorite(user?.uid, car, color);
+      } catch (error) {
+        console.error('Error al actualizar color favorito:', error);
+      }
+    }
+  };
+
+  // 3. Efecto de persistencia (Cargar favorito y color guardado)
+  useEffect(() => {
+    let isMounted = true;
+
+    const checkPersistence = async () => {
+      try {
+        // Obtenemos los datos guardados de este coche
+        const savedData = await favoriteService.getFavoriteDetail(
+          user?.uid,
+          car.id
+        );
+
+        if (isMounted && savedData) {
+          setIsFavorite(true);
+          // Si el usuario guardó un color específico, lo aplicamos
+          if (savedData.selectedColor) {
+            setSelectedColor(savedData.selectedColor);
+          }
+        } else if (isMounted) {
+          setIsFavorite(false);
+        }
+      } catch (error) {
+        console.error('Error al verificar persistencia:', error);
+      }
+    };
+
+    checkPersistence();
+    return () => {
+      isMounted = false;
+    };
+  }, [user?.uid, car.id]);
 
   return (
     <div className="bg-white rounded-2xl shadow-md overflow-hidden relative border border-slate-100 group">
@@ -42,9 +93,9 @@ export const CarCard = ({
           <span>{car.score}%</span>
         </div>
       )}
+
       <button
         onClick={handleFavoriteClick}
-        disabled={loadingFav}
         className="absolute top-3 left-3 z-20 p-2 bg-white/90 backdrop-blur-sm rounded-full shadow-sm hover:bg-white transition-all active:scale-90"
         title={isFavorite ? 'Quitar de favoritos' : 'Añadir a favoritos'}
       >
@@ -54,7 +105,7 @@ export const CarCard = ({
             isFavorite
               ? 'fill-red-500 text-red-500'
               : 'text-slate-400 hover:text-red-500'
-          } ${loadingFav ? 'animate-pulse' : ''}`}
+          }`}
         />
       </button>
 
@@ -73,7 +124,7 @@ export const CarCard = ({
             {carService.colorList.map((colorName) => (
               <button
                 key={colorName}
-                onClick={() => setSelectedColor(colorName)}
+                onClick={() => handleColorChange(colorName)} // <-- Llamamos a la función de cambio con persistencia
                 className={`w-4 h-4 rounded-full border-2 transition-all hover:scale-125 ${
                   selectedColor === colorName
                     ? 'border-blue-500 scale-110 shadow-sm'
