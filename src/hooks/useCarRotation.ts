@@ -5,7 +5,6 @@ import type { CarSpec } from '../types/car';
 export const useCarRotation = (
   car: CarSpec,
   rotating: boolean,
-  angleIndex: number,
   setAngleIndex: (n: number | ((prev: number) => number)) => void,
   selectedColor: string = 'white'
 ) => {

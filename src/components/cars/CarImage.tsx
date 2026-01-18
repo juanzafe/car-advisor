@@ -57,7 +57,6 @@ export const CarImage = ({
   useCarRotation(
     car,
     rotating,
-    angleIndex,
     (index: number | ((prev: number) => number)) => {
       const newIndex = typeof index === 'function' ? index(angleIndex) : index;
       dispatch({ type: 'SET_ANGLE_INDEX', payload: newIndex });
