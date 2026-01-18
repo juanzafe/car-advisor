@@ -21,7 +21,7 @@ export const Header = ({ view, setView }: HeaderProps) => {
           <div className="bg-linear-to-br from-blue-600 to-indigo-700 p-2.5 rounded-2xl shadow-xl shadow-blue-200 transition-all duration-300 group-hover:rotate-6 group-hover:scale-110">
             <CarFront className="text-white" size={32} strokeWidth={2.5} />
           </div>
-          <h1 className="text-2xl font-black tracking-tighter uppercase hidden sm:block">
+          <h1 className="text-4xl font-black tracking-tighter uppercase hidden sm:block">
             <span className="italic bg-clip-text text-transparent bg-linear-to-r from-slate-900 to-blue-600 pr-1">
               Car-Advisor
             </span>
