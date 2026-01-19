@@ -8,6 +8,8 @@ import { favoriteService } from '../../services/favoriteService';
 import { auth } from '../../lib/firebase';
 import { useAuthState } from 'react-firebase-hooks/auth';
 
+// Nueva función de logos con fuentes más fiables
+
 export const CarCard = ({
   car,
   onCompare,
@@ -20,7 +22,6 @@ export const CarCard = ({
   const [selectedColor, setSelectedColor] = useState('white');
   const [isFavorite, setIsFavorite] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
-
   const [user] = useAuthState(auth);
 
   const handleFavoriteClick = async () => {
@@ -94,11 +95,7 @@ export const CarCard = ({
           />
         </button>
 
-        {/* Click para abrir Modal */}
-        <div
-          className="overflow-hidden cursor-zoom-in"
-          onClick={() => setIsModalOpen(true)}
-        >
+        <div className="overflow-hidden" onClick={() => setIsModalOpen(true)}>
           <div className="transition-transform duration-500 ease-out group-hover:scale-110">
             <CarImage car={car} selectedColor={selectedColor} />
           </div>
@@ -106,11 +103,25 @@ export const CarCard = ({
 
         <div className="p-5 space-y-4">
           <div className="flex justify-between items-start">
-            <div>
-              <h3 className="font-bold text-lg leading-tight uppercase">
-                {car.brand} {car.model}
-              </h3>
-              <p className="text-sm text-slate-500">{car.year}</p>
+            <div className="flex items-center gap-3">
+              {/* Contenedor del Logo con Fallback a Google Icons para velocidad total */}
+              <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center p-1.5 shadow-sm border border-slate-100 shrink-0">
+                <img
+                  src={`https://www.google.com/s2/favicons?sz=64&domain=${car.brand.toLowerCase().replace(/\s+/g, '')}.com`}
+                  alt={car.brand}
+                  className="w-full h-full object-contain"
+                  onError={(e) => {
+                    e.currentTarget.src =
+                      'https://cdn-icons-png.flaticon.com/512/744/744465.png';
+                  }}
+                />
+              </div>
+              <div>
+                <h3 className="font-bold text-lg leading-tight uppercase text-slate-800">
+                  {car.brand} {car.model}
+                </h3>
+                <p className="text-sm text-slate-500 font-medium">{car.year}</p>
+              </div>
             </div>
 
             <div className="flex gap-1.5 mt-1">
@@ -168,7 +179,6 @@ export const CarCard = ({
         </div>
       </div>
 
-      {/* Componente Modal separado */}
       <CarModal
         car={car}
         selectedColor={selectedColor}

@@ -87,8 +87,8 @@ export const CarImage = ({
 
   return (
     <div
-      className="relative group bg-slate-50 h-48 flex items-center justify-center overflow-hidden rounded-t-xl cursor-pointer"
-      onClick={handleManualClick} // <--- CLICK MANUAL: UN ÁNGULO CADA VEZ
+      className="relative group bg-transparent h-48 flex items-center justify-center overflow-hidden rounded-t-xl cursor-pointer" // <-- bg-transparent es la clave
+      onClick={handleManualClick}
     >
       <img
         src={currentImageUrl}
