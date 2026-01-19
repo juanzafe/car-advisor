@@ -61,12 +61,12 @@ export const Header = ({ view, setView }: HeaderProps) => {
           {user ? (
             <div className="flex items-center gap-3">
               <div className="hidden md:block text-right">
-                <p className="text-xs font-black text-slate-900 leading-none">
+                <p className="text-s font-black text-slate-900 leading-none">
                   {user.displayName?.split(' ')[0]}
                 </p>
                 <button
                   onClick={() => signOut(auth)}
-                  className="text-[10px] uppercase text-slate-400 hover:text-red-500 font-bold"
+                  className="text-[15px] uppercase text-slate-400 hover:text-red-500 font-bold cursor-pointer transition-colors"
                 >
                   Salir
                 </button>
@@ -87,9 +87,10 @@ export const Header = ({ view, setView }: HeaderProps) => {
           ) : (
             <button
               onClick={loginWithGoogle}
-              className="bg-slate-900 text-white p-2.5 rounded-xl hover:bg-blue-600 transition-all"
+              className="flex items-center gap-2 bg-slate-900 text-white p-2.5 rounded-xl hover:bg-blue-600 transition-all"
             >
               <LogIn size={20} />
+              Login
             </button>
           )}
         </div>
