@@ -71,11 +71,18 @@ export const Header = ({ view, setView }: HeaderProps) => {
                   Salir
                 </button>
               </div>
-              <img
-                src={user.photoURL || ''}
-                className="w-10 h-10 rounded-full border-2 border-blue-500/20"
-                alt="avatar"
-              />
+              {user.photoURL ? (
+                <img
+                  src={user.photoURL}
+                  alt="avatar"
+                  referrerPolicy="no-referrer"
+                  className="w-10 h-10 rounded-full border-2 border-blue-500/20"
+                />
+              ) : (
+                <div className="w-10 h-10 rounded-full bg-slate-300 flex items-center justify-center text-xs font-bold text-slate-600">
+                  {user.displayName?.[0]}
+                </div>
+              )}
             </div>
           ) : (
             <button
