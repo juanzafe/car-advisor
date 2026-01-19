@@ -1,28 +1,19 @@
-import { useEffect, useMemo, useRef, useReducer } from 'react';
+import { useMemo, useReducer } from 'react';
 import { RotateCw, Play, Pause } from 'lucide-react';
 import { useCarRotation } from '../../hooks/useCarRotation';
 import { carService } from '../../services/carService';
 import type { CarSpec } from '../../types/car';
 
-type ImageState = {
-  angleIndex: number;
-  rotating: boolean;
-};
-
+type ImageState = { angleIndex: number; rotating: boolean };
 type ImageAction =
   | { type: 'RESET' }
   | { type: 'SET_ANGLE_INDEX'; payload: number }
   | { type: 'SET_ROTATING'; payload: boolean };
 
-const initialState: ImageState = {
-  angleIndex: 0,
-  rotating: false,
-};
-
 const imageReducer = (state: ImageState, action: ImageAction): ImageState => {
   switch (action.type) {
     case 'RESET':
-      return initialState;
+      return { ...state, angleIndex: 0, rotating: false };
     case 'SET_ANGLE_INDEX':
       return { ...state, angleIndex: action.payload };
     case 'SET_ROTATING':
@@ -32,24 +23,24 @@ const imageReducer = (state: ImageState, action: ImageAction): ImageState => {
   }
 };
 
+interface CarImageProps {
+  car: CarSpec;
+  selectedColor: string;
+  showControls?: boolean;
+  isAutoRotating?: boolean;
+}
+
 export const CarImage = ({
   car,
   selectedColor,
   showControls = true,
   isAutoRotating = false,
-}: {
-  car: CarSpec;
-  selectedColor: string;
-  showControls?: boolean;
-  isAutoRotating?: boolean;
-}) => {
+}: CarImageProps) => {
   const [state, dispatch] = useReducer(imageReducer, {
     angleIndex: 0,
     rotating: isAutoRotating,
   });
-
   const { angleIndex, rotating } = state;
-  const prevCarIdRef = useRef(car.id);
 
   const currentImageUrl = useMemo(() => {
     return carService.getCarImage(
@@ -61,7 +52,6 @@ export const CarImage = ({
     );
   }, [car, angleIndex, selectedColor]);
 
-  // Hook de rotación (se activa solo si 'rotating' es true mediante los botones)
   useCarRotation(
     car,
     rotating,
@@ -72,37 +62,20 @@ export const CarImage = ({
     selectedColor
   );
 
-  useEffect(() => {
-    if (prevCarIdRef.current !== car.id) {
-      prevCarIdRef.current = car.id;
-      dispatch({ type: 'RESET' });
-    }
-  }, [car.id]);
-
-  // Función para avanzar solo UN paso al hacer click
-  const handleManualClick = () => {
-    const nextIndex = (angleIndex + 1) % carService.angles.length;
-    dispatch({ type: 'SET_ANGLE_INDEX', payload: nextIndex });
-  };
-
   return (
-    <div
-      className="relative group bg-transparent h-48 flex items-center justify-center overflow-hidden rounded-t-xl cursor-pointer" // <-- bg-transparent es la clave
-      onClick={handleManualClick}
-    >
+    <div className="relative h-56 w-full flex items-center justify-center bg-transparent overflow-visible">
       <img
         src={currentImageUrl}
         alt={car.model}
-        key={`${car.id}-${selectedColor}-${angleIndex}`}
-        className="h-40 w-full object-contain p-2 relative z-0 transition-opacity duration-200"
+        className="h-44 w-full object-contain relative z-10"
       />
 
       {showControls && (
-        <div className="absolute bottom-3 inset-x-0 flex justify-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20">
-          <div className="flex items-center gap-1 bg-white/90 backdrop-blur-sm p-1.5 rounded-full shadow-lg border border-slate-200">
+        <div className="absolute bottom-0 inset-x-0 flex justify-center z-40 pb-2">
+          <div className="flex items-center gap-6 bg-white shadow-xl p-3 rounded-full border border-slate-300">
             <button
               onClick={(e) => {
-                e.stopPropagation(); // Evita el click del padre (handleManualClick)
+                e.stopPropagation();
                 dispatch({
                   type: 'SET_ANGLE_INDEX',
                   payload:
@@ -110,36 +83,36 @@ export const CarImage = ({
                     carService.angles.length,
                 });
               }}
-              className="p-1.5 hover:bg-slate-100 rounded-full text-slate-700 cursor-pointer"
+              className="text-slate-800 p-2 active:bg-slate-100 rounded-full"
             >
-              <RotateCw size={18} className="rotate-180" />
+              <RotateCw size={28} className="rotate-180" />
             </button>
 
             <button
               onClick={(e) => {
-                e.stopPropagation(); // Evita el click del padre
+                e.stopPropagation();
                 dispatch({ type: 'SET_ROTATING', payload: !rotating });
               }}
-              className="p-1.5 bg-blue-600 text-white rounded-full hover:bg-blue-700 shadow-md cursor-pointer"
+              className="bg-blue-600 text-white rounded-full p-3 shadow-lg active:scale-90"
             >
               {rotating ? (
-                <Pause size={18} fill="currentColor" />
+                <Pause size={28} fill="currentColor" />
               ) : (
-                <Play size={18} fill="currentColor" />
+                <Play size={28} fill="currentColor" />
               )}
             </button>
 
             <button
               onClick={(e) => {
-                e.stopPropagation(); // Evita el click del padre
+                e.stopPropagation();
                 dispatch({
                   type: 'SET_ANGLE_INDEX',
                   payload: (angleIndex + 1) % carService.angles.length,
                 });
               }}
-              className="p-1.5 hover:bg-slate-100 rounded-full text-slate-700 cursor-pointer"
+              className="text-slate-800 p-2 active:bg-slate-100 rounded-full"
             >
-              <RotateCw size={18} />
+              <RotateCw size={28} />
             </button>
           </div>
         </div>
