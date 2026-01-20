@@ -62,17 +62,31 @@ export const CarImage = ({
     selectedColor
   );
 
+  // FUNCIÓN PARA EL GIRO MANUAL AL CLICAR
+  const handleImageClick = () => {
+    dispatch({
+      type: 'SET_ANGLE_INDEX',
+      payload: (angleIndex + 1) % carService.angles.length,
+    });
+  };
+
   return (
-    <div className="relative h-56 w-full flex items-center justify-center bg-transparent overflow-visible">
+    <div
+      className="relative h-56 w-full flex items-center justify-center bg-transparent overflow-visible cursor-pointer"
+      onClick={handleImageClick} // <--- AHORA EL CLIC FUNCIONA EN TODO EL DIV
+    >
       <img
         src={currentImageUrl}
         alt={car.model}
-        className="h-44 w-full object-contain relative z-10"
+        className="h-44 w-full object-contain relative z-10 pointer-events-none" // pointer-events-none para que el clic pase al div
       />
 
       {showControls && (
         <div className="absolute bottom-0 inset-x-0 flex justify-center z-40 pb-2">
-          <div className="flex items-center gap-6 bg-white shadow-xl p-3 rounded-full border border-slate-300">
+          <div
+            className="flex items-center gap-6 bg-white shadow-xl p-3 rounded-full border border-slate-300"
+            onClick={(e) => e.stopPropagation()} // Evita que al pulsar botones el coche gire doble
+          >
             <button
               onClick={(e) => {
                 e.stopPropagation();
