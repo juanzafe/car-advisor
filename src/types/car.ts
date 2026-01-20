@@ -19,6 +19,7 @@ export interface CarSpec {
   ecoScore: number;
   sportScore: number;
   familyScore: number;
+  selectedColor?: string;
 }
 
 export interface Preferences {

@@ -28,7 +28,9 @@ export const CarCard = ({
   isSelected: boolean;
 }) => {
   // CORRECCIÓN 1: Necesitamos el setter para cambiar el color
-  const [selectedColor, setSelectedColor] = useState('white');
+  const [selectedColor, setSelectedColor] = useState(
+    car.selectedColor || 'white'
+  );
   const [isFavorite, setIsFavorite] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [user] = useAuthState(auth);
@@ -43,12 +45,19 @@ export const CarCard = ({
 
   const handleFavoriteClick = async (e: React.MouseEvent) => {
     e.stopPropagation();
-    setIsFavorite(!isFavorite);
+    const newFavoriteStatus = !isFavorite;
+    setIsFavorite(newFavoriteStatus);
+
     try {
-      if (isFavorite) await favoriteService.removeFavorite(user?.uid, car.id);
-      else await favoriteService.addFavorite(user?.uid, car, selectedColor);
-    } catch {
-      setIsFavorite(!isFavorite);
+      if (!newFavoriteStatus) {
+        await favoriteService.removeFavorite(user?.uid, car.id);
+      } else {
+        // ENVIAMOS EL COLOR SELECCIONADO AL SERVICIO
+        await favoriteService.addFavorite(user?.uid, car, selectedColor);
+      }
+    } catch (error) {
+      setIsFavorite(!newFavoriteStatus); // Revertimos si hay error
+      console.error('Error al gestionar favorito:', error);
     }
   };
 
