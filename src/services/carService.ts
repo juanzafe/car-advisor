@@ -1,52 +1,44 @@
-import type { CarSpec, Preferences, Traction } from '../types/car';
+import type { CarSpec, Preferences } from '../types/car';
 
-interface NhtsaResponse {
-  Results: Array<{
-    Make_Name: string;
-    Model_Name: string;
-    Model_ID: number;
-  }>;
+const NINJA_API_KEY = import.meta.env.VITE_NINJA_API_KEY;
+
+interface NinjaCar {
+  make: string;
+  model: string;
+  year: number;
+  horsepower: number;
+  combination_mpg: number;
+  drive: string;
+  fuel_type: string;
+  transmission: string;
 }
 
-/* ============================
-    Base de datos europea local
-============================ */
+// Datos locales realistas para cuando la API falla (Evita valores iguales)
+const LOCAL_DATA: Record<string, { hp: number; cons: number; weight: number }> =
+  {
+    A1: { hp: 110, cons: 5.4, weight: 1180 },
+    A3: { hp: 150, cons: 5.8, weight: 1395 },
+    A4: { hp: 204, cons: 6.4, weight: 1560 },
+    A6: { hp: 265, cons: 7.2, weight: 1780 },
+    Q3: { hp: 150, cons: 6.7, weight: 1580 },
+    Q5: { hp: 204, cons: 7.5, weight: 1840 },
+    TT: { hp: 245, cons: 7.0, weight: 1350 },
+    'SERIE 1': { hp: 136, cons: 5.7, weight: 1395 },
+    'SERIE 3': { hp: 184, cons: 6.1, weight: 1575 },
+    GOLF: { hp: 130, cons: 5.2, weight: 1340 },
+    LEON: { hp: 150, cons: 5.6, weight: 1360 },
+  };
+
 const EUROPEAN_MODELS: Record<string, string[]> = {
-  seat: ['Ibiza', 'Leon', 'Arona', 'Ateca', 'Formentor'],
-  renault: ['Clio', 'Megane', 'Captur', 'Kadjar'],
-  peugeot: ['208', '308', '2008', '3008'],
-  citroen: ['C3', 'C4', 'C5 Aircross'],
-  fiat: ['500', 'Panda', 'Tipo', '500X'],
-  skoda: ['Fabia', 'Octavia', 'Superb', 'Karoq', 'Kodiaq'],
-  dacia: ['Sandero', 'Duster', 'Jogger'],
-  bmw: ['Serie 1', 'Serie 3', 'Serie 5', 'X1', 'X3', 'X5', 'M3'],
   audi: ['A1', 'A3', 'A4', 'A6', 'Q3', 'Q5', 'TT'],
-  mercedes: ['Clase A', 'Clase C', 'Clase E', 'GLA', 'GLC'],
+  bmw: ['Serie 1', 'Serie 3', 'Serie 5', 'X1', 'X3', 'X5'],
   volkswagen: ['Polo', 'Golf', 'Passat', 'Tiguan'],
-  volvo: ['XC40', 'XC60', 'S60'],
-  porsche: ['911', 'Cayenne', 'Macan'],
+  seat: ['Ibiza', 'Leon', 'Arona', 'Ateca', 'Formentor'],
+  mercedes: ['Clase A', 'Clase C', 'Clase E', 'GLA', 'GLC'],
 };
-
-/* ============================
-    Random determinista
-============================ */
-function seededRandom(seed: string): number {
-  let hash = 0;
-  for (let i = 0; i < seed.length; i++) {
-    hash = (hash << 5) - hash + seed.charCodeAt(i);
-    hash |= 0;
-  }
-  return Math.abs(hash % 1000) / 1000;
-}
-
-/* ============================
-    Servicio principal
-============================ */
 
 export const carService = {
   angles: ['01', '05', '09', '13', '17', '21', '25', '29'],
-
-  // Lista de IDs de colores para rotar
   colorList: ['white', 'black', 'silver', 'blue', 'red'],
 
   getCarImage(
@@ -62,12 +54,9 @@ export const carService = {
       .replace(/clase\s?/i, '')
       .replace(/\s+/g, '');
     const url = new URL('https://cdn.imagin.studio/getimage');
-
-    // En tu carService.ts, dentro de getCarImage, cambia la línea del customer por esta:
-
     url.searchParams.append(
       'customer',
-      import.meta.env.VITE_IMAGIN_CUSTOMER_ID
+      import.meta.env.VITE_IMAGIN_CUSTOMER_ID || 'hrjavascript-mastery'
     );
     url.searchParams.append('make', make.toLowerCase());
     url.searchParams.append('modelFamily', normalizedModel);
@@ -75,144 +64,87 @@ export const carService = {
     url.searchParams.append('modelYear', year.toString());
     url.searchParams.append('angle', angle);
     url.searchParams.append('paintDescription', color);
-
     return url.toString();
   },
 
-  /* ============================
-      Fetch y generación de coches
-  ============================ */
   async fetchCars(make: string): Promise<CarSpec[]> {
     const cleanMake = make.trim().toLowerCase();
-    let models: string[] = [];
 
-    if (EUROPEAN_MODELS[cleanMake]) {
-      models = EUROPEAN_MODELS[cleanMake];
-    } else {
-      try {
-        const res = await fetch(
-          `https://vpic.nhtsa.dot.gov/api/vehicles/GetModelsForMake/${cleanMake}?format=json`
-        );
-        const data: NhtsaResponse = await res.json();
-        models = [...new Set(data.Results.map((m) => m.Model_Name))].slice(
-          0,
-          10
-        );
-      } catch {
-        return [];
+    try {
+      // Intentamos con una URL más limpia para evitar el error 400
+      const response = await fetch(
+        `https://api.api-ninjas.com/v1/cars?make=${encodeURIComponent(cleanMake)}&limit=10`,
+        { headers: { 'X-Api-Key': NINJA_API_KEY || '' } }
+      );
+
+      if (response.ok) {
+        const data = await response.json();
+        if (Array.isArray(data) && data.length > 0) {
+          return data.map((car: NinjaCar, index: number) =>
+            this.mapToCarSpec(car, index)
+          );
+        }
       }
+    } catch {
+      console.warn('Error API, usando base de datos local');
     }
 
-    return models.map((modelName) => {
-      const seed = `${cleanMake}-${modelName}`;
-      const rnd = seededRandom(seed);
-      const name = modelName.toUpperCase();
-      const year = 2023;
-
-      const isSport = ['M', 'AMG', 'RS', '911', 'TT'].some((k) =>
-        name.includes(k)
-      );
-      const isSUV = ['X', 'Q', 'GL', 'TIGUAN', 'XC'].some((k) =>
-        name.includes(k)
-      );
-      const isCompact = ['IBIZA', 'POLO', 'CLIO', '208', 'A1'].some((k) =>
-        name.includes(k)
-      );
-
-      let hp = 120;
-      let consumption = 6;
-      let price = 25000;
-      let weight = 1400;
-      let traction: Traction = 'FWD';
-
-      if (isSport) {
-        hp = 300 + rnd * 120;
-        consumption = 9 + rnd * 2;
-        price = 55000 + rnd * 20000;
-        weight = 1550;
-        traction = 'RWD';
-      } else if (isSUV) {
-        hp = 170 + rnd * 80;
-        consumption = 7 + rnd * 2;
-        price = 32000 + rnd * 12000;
-        weight = 1700;
-        traction = rnd > 0.6 ? 'AWD' : 'FWD';
-      } else if (isCompact) {
-        hp = 95 + rnd * 45;
-        consumption = 5 + rnd * 1;
-        price = 16000 + rnd * 6000;
-        weight = 1150;
-      }
-
-      const baseCar = {
-        id: `${cleanMake}-${modelName.replace(/\s+/g, '-')}`,
-        brand: cleanMake.toUpperCase(),
-        model: name,
-        year,
-        hp: Math.round(hp),
-        consumption: Number(consumption.toFixed(1)),
-        weight,
-        price: Math.round(price),
-        traction,
-        image: this.getCarImage(cleanMake, modelName, year),
+    // Fallback con datos DIFERENCIADOS por modelo
+    const models = EUROPEAN_MODELS[cleanMake] || [];
+    return models.map((m, i) => {
+      const spec = LOCAL_DATA[m.toUpperCase()] || {
+        hp: 115,
+        cons: 6.0,
+        weight: 1400,
       };
-
-      return {
-        ...baseCar,
-        ecoScore: this.calculateEcoScore(baseCar),
-        sportScore: this.calculateSportScore(baseCar),
-        familyScore: this.calculateFamilyScore(baseCar),
-      };
+      return this.mapToCarSpec(
+        {
+          make: cleanMake,
+          model: m,
+          year: 2024,
+          horsepower: spec.hp,
+          combination_mpg: Number((235.21 / spec.cons).toFixed(1)),
+          drive: 'fwd',
+          fuel_type: 'gas',
+          transmission: 'm',
+        } as NinjaCar,
+        i
+      );
     });
   },
 
-  /* ============================
-      Score principal (ranking)
-  ============================ */
+  mapToCarSpec(car: NinjaCar, index: number): CarSpec {
+    const hp = car.horsepower || 115;
+    const consumption = car.combination_mpg
+      ? Number((235.21 / car.combination_mpg).toFixed(1))
+      : 6.0;
+
+    return {
+      id: `${car.make}-${car.model}-${index}`,
+      brand: car.make.toUpperCase(),
+      model: car.model.toUpperCase(),
+      year: car.year,
+      hp: hp,
+      consumption: consumption,
+      weight: 1200 + hp * 1.3,
+      price: 0,
+      traction: car.drive?.toLowerCase().includes('awd') ? 'AWD' : 'FWD',
+      acceleration: Number((12 - hp / 40).toFixed(1)),
+      topSpeed: 165 + Math.round(hp / 3),
+      fuelType: car.fuel_type === 'gas' ? 'Gasolina' : 'Diésel',
+      transmission: car.transmission === 'a' ? 'Auto' : 'Manual',
+      image: this.getCarImage(car.make, car.model, car.year),
+      ecoScore: Math.round(Math.max(0, 100 - consumption * 9)),
+      sportScore: Math.round(Math.min(100, hp / 3.5)),
+      familyScore: 75,
+    };
+  },
+
   calculateScore(car: CarSpec, prefs: Preferences): number {
     let score = 100;
-
-    if (car.hp < prefs.minPower) score -= (prefs.minPower - car.hp) * 0.4;
-
+    if (car.hp < prefs.minPower) score -= (prefs.minPower - car.hp) * 0.5;
     if (car.consumption > prefs.maxConsumption)
-      score -= (car.consumption - prefs.maxConsumption) * 8;
-
-    if (car.price > prefs.maxPrice)
-      score -= ((car.price - prefs.maxPrice) / 1000) * 2;
-
-    if (
-      prefs.preferredTraction !== 'any' &&
-      car.traction === prefs.preferredTraction
-    )
-      score += 15;
-
+      score -= (car.consumption - prefs.maxConsumption) * 10;
     return Math.max(0, Math.min(100, Math.round(score)));
-  },
-
-  /* ============================
-      Sub-scores (Radar chart)
-  ============================ */
-  calculateEcoScore(
-    car: Omit<CarSpec, 'ecoScore' | 'sportScore' | 'familyScore'>
-  ): number {
-    return Math.max(
-      0,
-      Math.min(100, 100 - car.consumption * 10 - car.weight / 60)
-    );
-  },
-
-  calculateSportScore(
-    car: Omit<CarSpec, 'ecoScore' | 'sportScore' | 'familyScore'>
-  ): number {
-    return Math.min(100, car.hp / 3 + (car.traction !== 'FWD' ? 20 : 0));
-  },
-
-  calculateFamilyScore(
-    car: Omit<CarSpec, 'ecoScore' | 'sportScore' | 'familyScore'>
-  ): number {
-    return Math.min(
-      100,
-      (car.weight > 1500 ? 30 : 15) + (car.price < 35000 ? 30 : 15)
-    );
   },
 };

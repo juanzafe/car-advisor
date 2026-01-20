@@ -24,7 +24,7 @@ export const CarModal = ({
       className="fixed inset-0 z-100 h-dvh w-screen flex flex-col items-center justify-center bg-[#121212] p-0 animate-in fade-in duration-300 overflow-hidden"
       onClick={onClose}
     >
-      {/* 1. LOGO Y MARCA: Más compactos en móvil */}
+      {/* LOGO Y MARCA */}
       <div className="absolute top-6 left-6 z-120 flex items-center gap-3 animate-in slide-in-from-left-10 duration-700">
         <div className="w-10 h-10 md:w-20 md:h-20 bg-white rounded-full flex items-center justify-center p-2 md:p-3 shadow-xl">
           <img
@@ -40,7 +40,7 @@ export const CarModal = ({
         </div>
       </div>
 
-      {/* 2. BOTÓN CERRAR: Compacto */}
+      {/* BOTÓN CERRAR */}
       <button
         className="absolute top-6 right-6 text-white/50 hover:text-white z-120 bg-white/5 rounded-full p-2"
         onClick={onClose}
@@ -48,12 +48,12 @@ export const CarModal = ({
         <X className="w-6 h-6 md:w-8 md:h-8" strokeWidth={1} />
       </button>
 
-      {/* 3. CONTENEDOR CENTRAL: Aquí el coche manda */}
+      {/* CONTENEDOR CENTRAL */}
       <div
         className="relative w-full h-full flex items-center justify-center"
         onClick={(e) => e.stopPropagation()}
       >
-        {/* EL COCHE: Mantenemos el escalado que querías */}
+        {/* EL COCHE: Grande como pediste */}
         <div className="w-full flex justify-center items-center px-4 transform scale-[1.5] md:scale-[2.5] lg:scale-[3.2] transition-transform duration-500">
           <CarImage
             car={car}
@@ -63,7 +63,7 @@ export const CarModal = ({
           />
         </div>
 
-        {/* 4. MODELO: Posicionado de forma que no empuje el layout */}
+        {/* MODELO ABAJO */}
         <div className="absolute bottom-8 w-full flex flex-col items-center z-20 animate-in slide-in-from-bottom-10 duration-700">
           <h3 className="text-[#7a8170] text-4xl sm:text-7xl md:text-9xl font-black uppercase tracking-tighter italic leading-none text-center px-4 drop-shadow-2xl">
             {car.model}

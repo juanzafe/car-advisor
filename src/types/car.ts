@@ -6,12 +6,15 @@ export interface CarSpec {
   model: string;
   year: number;
   hp: number;
-  weight: number;
   consumption: number;
+  weight: number;
   price: number;
   traction: Traction;
+  acceleration: number;
+  topSpeed: number;
   image: string;
-
+  fuelType: string;
+  transmission: string;
   score?: number;
   ecoScore: number;
   sportScore: number;
