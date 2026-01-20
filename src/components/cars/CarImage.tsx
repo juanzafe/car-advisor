@@ -73,19 +73,19 @@ export const CarImage = ({
   return (
     <div
       className="relative h-56 w-full flex items-center justify-center bg-transparent overflow-visible cursor-pointer"
-      onClick={handleImageClick} // <--- AHORA EL CLIC FUNCIONA EN TODO EL DIV
+      onClick={handleImageClick}
     >
       <img
         src={currentImageUrl}
         alt={car.model}
-        className="h-44 w-full object-contain relative z-10 pointer-events-none" // pointer-events-none para que el clic pase al div
+        className="h-44 w-full object-contain relative z-10 pointer-events-none"
       />
 
       {showControls && (
         <div className="absolute bottom-0 inset-x-0 flex justify-center z-40 pb-2">
           <div
             className="flex items-center gap-6 bg-white shadow-xl p-3 rounded-full border border-slate-300"
-            onClick={(e) => e.stopPropagation()} // Evita que al pulsar botones el coche gire doble
+            onClick={(e) => e.stopPropagation()}
           >
             <button
               onClick={(e) => {

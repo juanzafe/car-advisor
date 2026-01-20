@@ -22,7 +22,6 @@ export const PreferenceFilters = ({
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-        {/* Potencia */}
         <div className="space-y-3">
           <div className="flex justify-between items-center text-sm font-medium">
             <span className="flex items-center gap-2 text-slate-500">
@@ -42,8 +41,6 @@ export const PreferenceFilters = ({
             className="w-full h-1.5 bg-slate-100 rounded-lg appearance-none cursor-pointer accent-blue-600"
           />
         </div>
-
-        {/* Consumo */}
         <div className="space-y-3">
           <div className="flex justify-between items-center text-sm font-medium">
             <span className="flex items-center gap-2 text-slate-500">
@@ -65,8 +62,6 @@ export const PreferenceFilters = ({
             className="w-full h-1.5 bg-slate-100 rounded-lg appearance-none cursor-pointer accent-blue-600"
           />
         </div>
-
-        {/* Presupuesto */}
         <div className="space-y-3">
           <div className="flex justify-between items-center text-sm font-medium">
             <span className="flex items-center gap-2 text-slate-500">
@@ -86,8 +81,6 @@ export const PreferenceFilters = ({
             className="w-full h-1.5 bg-slate-100 rounded-lg appearance-none cursor-pointer accent-blue-600"
           />
         </div>
-
-        {/* Tracción */}
         <div className="space-y-3">
           <div className="flex justify-between items-center text-sm font-medium text-slate-500 mb-1">
             <span className="flex items-center gap-2">

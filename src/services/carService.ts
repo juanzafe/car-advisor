@@ -13,7 +13,6 @@ interface NinjaCar {
   transmission: string;
 }
 
-// Datos locales realistas para cuando la API falla (Evita valores iguales)
 const LOCAL_DATA: Record<string, { hp: number; cons: number; weight: number }> =
   {
     A1: { hp: 110, cons: 5.4, weight: 1180 },
@@ -71,7 +70,6 @@ export const carService = {
     const cleanMake = make.trim().toLowerCase();
 
     try {
-      // Intentamos con una URL más limpia para evitar el error 400
       const response = await fetch(
         `https://api.api-ninjas.com/v1/cars?make=${encodeURIComponent(cleanMake)}&limit=10`,
         { headers: { 'X-Api-Key': NINJA_API_KEY || '' } }
@@ -89,7 +87,6 @@ export const carService = {
       console.warn('Error API, usando base de datos local');
     }
 
-    // Fallback con datos DIFERENCIADOS por modelo
     const models = EUROPEAN_MODELS[cleanMake] || [];
     return models.map((m, i) => {
       const spec = LOCAL_DATA[m.toUpperCase()] || {

@@ -27,7 +27,6 @@ export const CarCard = ({
   onCompare: () => void;
   isSelected: boolean;
 }) => {
-  // CORRECCIÓN 1: Necesitamos el setter para cambiar el color
   const [selectedColor, setSelectedColor] = useState(
     car.selectedColor || 'white'
   );
@@ -52,16 +51,14 @@ export const CarCard = ({
       if (!newFavoriteStatus) {
         await favoriteService.removeFavorite(user?.uid, car.id);
       } else {
-        // ENVIAMOS EL COLOR SELECCIONADO AL SERVICIO
         await favoriteService.addFavorite(user?.uid, car, selectedColor);
       }
     } catch (error) {
-      setIsFavorite(!newFavoriteStatus); // Revertimos si hay error
+      setIsFavorite(!newFavoriteStatus);
       console.error('Error al gestionar favorito:', error);
     }
   };
 
-  // Función auxiliar para los círculos de color
   const getColorHex = (color: string) => {
     const colors: Record<string, string> = {
       white: '#FFFFFF',
@@ -98,7 +95,6 @@ export const CarCard = ({
               {car.brand} {car.model}
             </h3>
 
-            {/* CORRECCIÓN 2: Selector de colores implementado */}
             <div className="flex gap-2">
               {carService.colorList.map((color) => (
                 <button

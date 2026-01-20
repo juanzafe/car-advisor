@@ -11,7 +11,6 @@ import {
 import type { CarSpec } from '../types/car';
 import { carService } from './carService';
 
-// Definimos una interfaz para los datos que guardamos
 interface FavoriteRecord extends CarSpec {
   selectedColor?: string;
   addedAt?: string;
@@ -21,10 +20,9 @@ export const favoriteService = {
   async addFavorite(userId: string | undefined, car: CarSpec, color: string) {
     if (!userId) return;
 
-    // Guardamos el objeto del coche y el color elegido
     const favoriteData = {
       ...car,
-      selectedColor: color, // <--- Guardamos el color aquí
+      selectedColor: color,
       addedAt: new Date().toISOString(),
     };
 
@@ -67,7 +65,6 @@ export const favoriteService = {
 
     return querySnapshot.docs.map((doc) => ({
       ...(doc.data() as CarSpec),
-      // Si el coche guardado tiene un color, lo respetamos
       image: carService.getCarImage(
         doc.data().brand,
         doc.data().model,

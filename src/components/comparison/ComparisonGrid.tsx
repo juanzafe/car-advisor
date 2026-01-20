@@ -156,9 +156,6 @@ function buildRadarData(cars: CarSpec[]) {
   ];
 }
 
-/* ============================
-   UI Components
-============================ */
 const WinnerCard = ({
   icon,
   label,
