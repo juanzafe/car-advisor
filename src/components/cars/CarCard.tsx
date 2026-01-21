@@ -13,7 +13,7 @@ import {
 import { CarImage } from './CarImage';
 import { CarModal } from './CarModal';
 import type { CarSpec } from '../../types/car';
-import { carService } from '../../services/carService'; // Importamos el servicio para los colores
+import { carService } from '../../services/carService';
 import { favoriteService } from '../../services/favoriteService';
 import { auth } from '../../lib/firebase';
 import { useAuthState } from 'react-firebase-hooks/auth';
@@ -72,7 +72,12 @@ export const CarCard = ({
 
   return (
     <>
-      <div className="bg-[#f1f5f9] rounded-2xl shadow-md overflow-hidden relative border border-slate-200 flex flex-col h-full transition-all hover:shadow-xl">
+      <div
+        onMouseEnter={() =>
+          carService.preloadFullCar(car.brand, car.model, car.year)
+        }
+        className="bg-[#f1f5f9] rounded-2xl shadow-md overflow-hidden relative border border-slate-200 flex flex-col h-full transition-all hover:shadow-xl"
+      >
         <button
           onClick={handleFavoriteClick}
           className="absolute top-3 left-3 z-30 p-2 bg-white/90 backdrop-blur-sm rounded-full shadow-sm"

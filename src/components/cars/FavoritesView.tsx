@@ -34,12 +34,18 @@ export const FavoritesView = ({
         <h2 className="text-3xl font-bold">Mis Favoritos</h2>
       </div>
 
-      <CarsGrid
-        cars={favorites}
-        isLoading={loading}
-        onCompare={onCompare}
-        selectedIds={selectedIds}
-      />
+      {favorites.length === 0 && !loading ? (
+        <div className="text-center py-20 bg-white rounded-3xl border-2 border-dashed border-slate-200">
+          <p className="text-slate-400">Aún no has guardado ningún coche.</p>
+        </div>
+      ) : (
+        <CarsGrid
+          cars={favorites}
+          isLoading={loading}
+          onCompare={onCompare}
+          selectedIds={selectedIds}
+        />
+      )}
     </div>
   );
 };
