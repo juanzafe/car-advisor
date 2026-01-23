@@ -55,7 +55,8 @@ export const carService = {
     url.searchParams.append('modelYear', year.toString());
     url.searchParams.append('angle', angle);
     url.searchParams.append('paintDescription', color);
-    url.searchParams.append('width', isFull ? '1200' : '500'); // Un poco más de margen para calidad
+    url.searchParams.append('width', isFull ? '1200' : '500');
+    url.searchParams.append('zoomLevel', '0');
 
     const finalUrl = url.toString();
     imageCache.set(cacheKey, finalUrl);

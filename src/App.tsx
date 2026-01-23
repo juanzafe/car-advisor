@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useState, useRef } from 'react'; // Añadido useRef
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { auth, loginWithGoogle } from './lib/firebase';
 import { carService } from './services/carService';
@@ -25,6 +25,9 @@ export default function App() {
     preferredTraction: 'any',
   });
 
+  // Referencia para el scroll automático
+  const resultsRef = useRef<HTMLDivElement>(null);
+
   const search = useCallback(
     async (query: string) => {
       try {
@@ -36,7 +39,18 @@ export default function App() {
             score: carService.calculateScore(car, preferences),
           }))
           .sort((a, b) => (b.score ?? 0) - (a.score ?? 0));
+
         setCars(scoredCars);
+
+        // Scroll automático suave hacia los resultados (solo si hay coches)
+        if (results.length > 0) {
+          setTimeout(() => {
+            resultsRef.current?.scrollIntoView({
+              behavior: 'smooth',
+              block: 'start',
+            });
+          }, 100);
+        }
       } catch (error) {
         console.error('Error fetching cars', error);
         setCars([]);
@@ -105,12 +119,15 @@ export default function App() {
               setPreferences={setPreferences}
             />
 
-            <CarsGrid
-              cars={cars}
-              isLoading={loading}
-              onCompare={addToCompare}
-              selectedIds={selected.map((c) => c.id)}
-            />
+            {/* Div con referencia para el scroll automático */}
+            <div ref={resultsRef} className="scroll-mt-10">
+              <CarsGrid
+                cars={cars}
+                isLoading={loading}
+                onCompare={addToCompare}
+                selectedIds={selected.map((c) => c.id)}
+              />
+            </div>
           </>
         ) : (
           <FavoritesView
