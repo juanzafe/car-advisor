@@ -1,4 +1,4 @@
-import { useCallback, useState, useRef } from 'react';
+import { useCallback, useState, useRef, useEffect } from 'react'; // Añadido useEffect
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { auth, loginWithGoogle } from './lib/firebase';
 import { carService } from './services/carService';
@@ -8,13 +8,12 @@ import { CarsGrid } from './components/cars/CarsGrid';
 import { ComparisonGrid } from './components/comparison/ComparisonGrid';
 import { PreferenceFilters } from './components/search/PreferenceFilters';
 import { FavoritesView } from './components/cars/FavoritesView';
-import PrivacyPolicy from './pages/PrivacyPolicy'; // Importa la página que creamos
+import PrivacyPolicy from './pages/PrivacyPolicy';
 import { Star } from 'lucide-react';
 import type { CarSpec, Preferences } from './types/car';
 
 export default function App() {
   const [user, authLoading] = useAuthState(auth);
-  // Añadimos 'privacy' a los estados posibles de la vista
   const [view, setView] = useState<'home' | 'favorites' | 'privacy'>('home');
   const [cars, setCars] = useState<CarSpec[]>([]);
   const [selected, setSelected] = useState<CarSpec[]>([]);
@@ -28,12 +27,21 @@ export default function App() {
   });
 
   const resultsRef = useRef<HTMLDivElement>(null);
+  const comparisonRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (selected.length > 0) {
+      comparisonRef.current?.scrollIntoView({
+        behavior: 'smooth',
+        block: 'start',
+      });
+    }
+  }, [selected.length]);
 
   const search = useCallback(
     async (query: string) => {
       try {
         setLoading(true);
-        // Si buscamos algo, volvemos a la home automáticamente
         if (view !== 'home') setView('home');
 
         const results = await carService.fetchCars(query);
@@ -87,62 +95,77 @@ export default function App() {
       <Header view={view === 'privacy' ? 'home' : view} setView={setView} />
 
       <main className="max-w-7xl mx-auto p-6 space-y-8">
-        {/* Renderizado condicional de las 3 vistas */}
         {view === 'privacy' ? (
           <PrivacyPolicy />
-        ) : view === 'home' ? (
+        ) : (
           <>
-            <section className="space-y-2 text-center md:text-left">
-              <h2 className="text-3xl font-extrabold text-slate-900">
-                {user
-                  ? `¡Hola, ${user.displayName?.split(' ')[0]}! 👋`
-                  : 'Encuentra tu coche ideal'}
-              </h2>
-              <p className="text-slate-600">
-                Compara especificaciones técnicas y elige con datos reales.
-              </p>
-            </section>
+            {view === 'home' && (
+              <>
+                <section className="space-y-2 text-center md:text-left">
+                  <h2 className="text-3xl font-extrabold text-slate-900">
+                    {user
+                      ? `¡Hola, ${user.displayName?.split(' ')[0]}! 👋`
+                      : 'Encuentra tu coche ideal'}
+                  </h2>
+                  <p className="text-slate-600">
+                    Compara especificaciones técnicas y elige con datos reales.
+                  </p>
+                </section>
 
-            <SearchBar onSearch={search} isLoading={loading} />
+                <SearchBar onSearch={search} isLoading={loading} />
 
-            {!user && cars.length > 0 && (
-              <div className="bg-blue-600 rounded-2xl p-4 text-white flex justify-between items-center shadow-lg">
-                <p className="font-medium flex items-center gap-2">
-                  <Star size={18} fill="white" /> ¡Guarda tus favoritos
-                  iniciando sesión!
-                </p>
-                <button
-                  onClick={loginWithGoogle}
-                  className="bg-white text-blue-600 px-4 py-2 rounded-xl font-bold text-sm"
-                >
-                  Acceder
-                </button>
-              </div>
+                {!user && cars.length > 0 && (
+                  <div className="bg-blue-600 rounded-2xl p-4 text-white flex justify-between items-center shadow-lg">
+                    <p className="font-medium flex items-center gap-2">
+                      <Star size={18} fill="white" /> ¡Guarda tus favoritos
+                      iniciando sesión!
+                    </p>
+                    <button
+                      onClick={loginWithGoogle}
+                      className="bg-white text-blue-600 px-4 py-2 rounded-xl font-bold text-sm"
+                    >
+                      Acceder
+                    </button>
+                  </div>
+                )}
+
+                <PreferenceFilters
+                  preferences={preferences}
+                  setPreferences={setPreferences}
+                />
+              </>
             )}
 
-            <PreferenceFilters
-              preferences={preferences}
-              setPreferences={setPreferences}
-            />
-
-            {selected.length > 0 && (
-              <ComparisonGrid cars={selected} onRemove={removeFromCompare} />
-            )}
+            <div ref={comparisonRef} className="scroll-mt-24">
+              {selected.length > 0 && (
+                <section className="animate-in fade-in slide-in-from-top-4 duration-500">
+                  <div className="flex items-center gap-2 mb-4">
+                    <div className="h-8 w-1 bg-blue-600 rounded-full"></div>
+                  </div>
+                  <ComparisonGrid
+                    cars={selected}
+                    onRemove={removeFromCompare}
+                  />
+                </section>
+              )}
+            </div>
 
             <div ref={resultsRef} className="scroll-mt-10">
-              <CarsGrid
-                cars={cars}
-                isLoading={loading}
-                onCompare={addToCompare}
-                selectedIds={selected.map((c) => c.id)}
-              />
+              {view === 'home' ? (
+                <CarsGrid
+                  cars={cars}
+                  isLoading={loading}
+                  onCompare={addToCompare}
+                  selectedIds={selected.map((c) => c.id)}
+                />
+              ) : (
+                <FavoritesView
+                  onCompare={addToCompare}
+                  selectedIds={selected.map((c) => c.id)}
+                />
+              )}
             </div>
           </>
-        ) : (
-          <FavoritesView
-            onCompare={addToCompare}
-            selectedIds={selected.map((c) => c.id)}
-          />
         )}
       </main>
 
