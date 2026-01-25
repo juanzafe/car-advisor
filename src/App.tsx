@@ -1,4 +1,4 @@
-import { useCallback, useState, useRef } from 'react'; // Añadido useRef
+import { useCallback, useState, useRef } from 'react';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { auth, loginWithGoogle } from './lib/firebase';
 import { carService } from './services/carService';
@@ -8,12 +8,14 @@ import { CarsGrid } from './components/cars/CarsGrid';
 import { ComparisonGrid } from './components/comparison/ComparisonGrid';
 import { PreferenceFilters } from './components/search/PreferenceFilters';
 import { FavoritesView } from './components/cars/FavoritesView';
+import PrivacyPolicy from './pages/PrivacyPolicy'; // Importa la página que creamos
 import { Star } from 'lucide-react';
 import type { CarSpec, Preferences } from './types/car';
 
 export default function App() {
   const [user, authLoading] = useAuthState(auth);
-  const [view, setView] = useState<'home' | 'favorites'>('home');
+  // Añadimos 'privacy' a los estados posibles de la vista
+  const [view, setView] = useState<'home' | 'favorites' | 'privacy'>('home');
   const [cars, setCars] = useState<CarSpec[]>([]);
   const [selected, setSelected] = useState<CarSpec[]>([]);
   const [loading, setLoading] = useState(false);
@@ -25,13 +27,15 @@ export default function App() {
     preferredTraction: 'any',
   });
 
-  // Referencia para el scroll automático
   const resultsRef = useRef<HTMLDivElement>(null);
 
   const search = useCallback(
     async (query: string) => {
       try {
         setLoading(true);
+        // Si buscamos algo, volvemos a la home automáticamente
+        if (view !== 'home') setView('home');
+
         const results = await carService.fetchCars(query);
         const scoredCars = results
           .map((car) => ({
@@ -42,7 +46,6 @@ export default function App() {
 
         setCars(scoredCars);
 
-        // Scroll automático suave hacia los resultados (solo si hay coches)
         if (results.length > 0) {
           setTimeout(() => {
             resultsRef.current?.scrollIntoView({
@@ -58,7 +61,7 @@ export default function App() {
         setLoading(false);
       }
     },
-    [preferences]
+    [preferences, view]
   );
 
   const addToCompare = useCallback((car: CarSpec) => {
@@ -81,10 +84,13 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-slate-50/50">
-      <Header view={view} setView={setView} />
+      <Header view={view === 'privacy' ? 'home' : view} setView={setView} />
 
       <main className="max-w-7xl mx-auto p-6 space-y-8">
-        {view === 'home' ? (
+        {/* Renderizado condicional de las 3 vistas */}
+        {view === 'privacy' ? (
+          <PrivacyPolicy />
+        ) : view === 'home' ? (
           <>
             <section className="space-y-2 text-center md:text-left">
               <h2 className="text-3xl font-extrabold text-slate-900">
@@ -119,7 +125,10 @@ export default function App() {
               setPreferences={setPreferences}
             />
 
-            {/* Div con referencia para el scroll automático */}
+            {selected.length > 0 && (
+              <ComparisonGrid cars={selected} onRemove={removeFromCompare} />
+            )}
+
             <div ref={resultsRef} className="scroll-mt-10">
               <CarsGrid
                 cars={cars}
@@ -135,14 +144,18 @@ export default function App() {
             selectedIds={selected.map((c) => c.id)}
           />
         )}
-
-        {selected.length > 0 && (
-          <ComparisonGrid cars={selected} onRemove={removeFromCompare} />
-        )}
       </main>
 
       <footer className="py-12 text-center text-slate-400 text-sm border-t border-slate-100 mt-12">
         <p>© 2026 CarAdvisor Pro - juanzamudiofdez@gmail.com</p>
+        <div className="mt-4 flex justify-center gap-6">
+          <button
+            onClick={() => setView('privacy')}
+            className="hover:text-blue-600 underline decoration-slate-200"
+          >
+            Política de Privacidad
+          </button>
+        </div>
       </footer>
     </div>
   );
