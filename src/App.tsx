@@ -9,7 +9,7 @@ import { ComparisonGrid } from './components/comparison/ComparisonGrid';
 import { PreferenceFilters } from './components/search/PreferenceFilters';
 import { FavoritesView } from './components/cars/FavoritesView';
 import PrivacyPolicy from './pages/PrivacyPolicy';
-import { Star } from 'lucide-react';
+import { Star, Trash2 } from 'lucide-react';
 import type { CarSpec, Preferences } from './types/car';
 
 export default function App() {
@@ -82,6 +82,10 @@ export default function App() {
     setSelected((prev) => prev.filter((c) => c.id !== id));
   }, []);
 
+  const clearComparison = () => {
+    setSelected([]);
+  };
+
   if (authLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-slate-50">
@@ -141,6 +145,13 @@ export default function App() {
                 <section className="animate-in fade-in slide-in-from-top-4 duration-500">
                   <div className="flex items-center gap-2 mb-4">
                     <div className="h-8 w-1 bg-blue-600 rounded-full"></div>
+                    <button
+                      onClick={clearComparison}
+                      className="flex items-center gap-2 text-red-500 hover:text-red-700 transition-colors text-sm font-medium"
+                    >
+                      <Trash2 size={16} />
+                      Borrar todo
+                    </button>
                   </div>
                   <ComparisonGrid
                     cars={selected}
