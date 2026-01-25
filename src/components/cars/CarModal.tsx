@@ -1,12 +1,14 @@
 import { X } from 'lucide-react';
 import { CarImage } from './CarImage';
 import type { CarSpec } from '../../types/car';
+import { translations } from '../../locales/translations';
 
 interface CarModalProps {
   car: CarSpec;
   selectedColor: string;
   isOpen: boolean;
   onClose: () => void;
+  lang?: 'es' | 'en';
 }
 
 export const CarModal = ({
@@ -14,10 +16,24 @@ export const CarModal = ({
   selectedColor,
   isOpen,
   onClose,
+  lang = 'es',
 }: CarModalProps) => {
+  const t = translations[lang];
+
   if (!isOpen) return null;
 
   const brandLogoUrl = `https://www.google.com/s2/favicons?sz=128&domain=${car.brand.toLowerCase().replace(/\s+/g, '')}.com`;
+
+  // Función idéntica para mantener coherencia en la traducción
+  const translateValue = (dict: Record<string, string>, value: string) => {
+    if (!value) return value;
+    const key = value
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/\s+/g, '');
+    return dict[key] || value;
+  };
 
   return (
     <div
@@ -42,6 +58,7 @@ export const CarModal = ({
       <button
         className="absolute top-6 right-6 text-white/50 hover:text-white z-120 bg-white/5 rounded-full p-2"
         onClick={onClose}
+        aria-label={t.closeDetails}
       >
         <X className="w-6 h-6 md:w-8 md:h-8" strokeWidth={1} />
       </button>
@@ -63,6 +80,18 @@ export const CarModal = ({
           <h3 className="text-[#7a8170] text-4xl sm:text-7xl md:text-9xl font-black uppercase tracking-tighter italic leading-none text-center px-4 drop-shadow-2xl">
             {car.model}
           </h3>
+
+          <div className="flex gap-4 mt-2 text-white/40 text-[10px] md:text-xs font-bold uppercase tracking-widest">
+            <span>{car.year}</span>
+            <span>•</span>
+            <span>
+              {car.hp} {lang === 'es' ? 'CV' : 'HP'}
+            </span>
+            <span>•</span>
+            <span>
+              {t.engine}: {translateValue(t.fuelTypes, car.fuelType)}
+            </span>
+          </div>
         </div>
       </div>
     </div>

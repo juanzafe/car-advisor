@@ -5,17 +5,21 @@ import { favoriteService } from '../../services/favoriteService';
 import { CarsGrid } from './CarsGrid';
 import type { CarSpec } from '../../types/car';
 import { Heart } from 'lucide-react';
+import { translations } from '../../locales/translations'; // Importante
 
 export const FavoritesView = ({
   onCompare,
   selectedIds,
+  lang = 'es',
 }: {
   onCompare: (car: CarSpec) => void;
   selectedIds: string[];
+  lang: 'es' | 'en'; // <--- AÑADE ESTO A LA INTERFACE
 }) => {
   const [user] = useAuthState(auth);
   const [favorites, setFavorites] = useState<CarSpec[]>([]);
   const [loading, setLoading] = useState(true);
+  const t = translations[lang]; // Atajo para traducir títulos
 
   useEffect(() => {
     const loadFavs = async () => {
@@ -31,12 +35,16 @@ export const FavoritesView = ({
     <div className="space-y-6">
       <div className="flex items-center gap-3">
         <Heart className="text-red-500 fill-red-500" size={28} />
-        <h2 className="text-3xl font-bold">Mis Favoritos</h2>
+        <h2 className="text-3xl font-bold">{t.favorites}</h2> {/* TRADUCIDO */}
       </div>
 
       {favorites.length === 0 && !loading ? (
         <div className="text-center py-20 bg-white rounded-3xl border-2 border-dashed border-slate-200">
-          <p className="text-slate-400">Aún no has guardado ningún coche.</p>
+          <p className="text-slate-400">
+            {lang === 'es'
+              ? 'Aún no has guardado ningún coche.'
+              : "You haven't saved any cars yet."}
+          </p>
         </div>
       ) : (
         <CarsGrid
@@ -44,6 +52,7 @@ export const FavoritesView = ({
           isLoading={loading}
           onCompare={onCompare}
           selectedIds={selectedIds}
+          lang={lang} // <--- CAMBIADO: Antes ponía "es", ahora usa la variable
         />
       )}
     </div>

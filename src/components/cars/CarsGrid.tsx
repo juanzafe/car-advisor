@@ -6,10 +6,12 @@ interface CarsGridProps {
   onCompare: (car: CarSpec) => void;
   isLoading?: boolean;
   selectedIds?: string[];
+  lang: 'es' | 'en';
 }
 
 export function CarsGrid({
   cars,
+  lang,
   onCompare,
   selectedIds,
   isLoading = false,
@@ -43,6 +45,7 @@ export function CarsGrid({
           car={car}
           onCompare={() => onCompare(car)}
           isSelected={selectedIds?.includes(car.id) || false}
+          lang={lang}
         />
       ))}
     </div>

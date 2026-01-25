@@ -2,14 +2,17 @@ import { auth, loginWithGoogle } from '../../lib/firebase';
 import { signOut } from 'firebase/auth';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { LogIn, CarFront, Heart, Search } from 'lucide-react';
+import { translations } from '../../locales/translations'; // Importante importar esto
 
 interface HeaderProps {
   view: 'home' | 'favorites';
   setView: (view: 'home' | 'favorites') => void;
+  lang?: 'es' | 'en'; // Añadimos la prop de lenguaje
 }
 
-export const Header = ({ view, setView }: HeaderProps) => {
+export const Header = ({ view, setView, lang = 'es' }: HeaderProps) => {
   const [user] = useAuthState(auth);
+  const t = translations[lang]; // Atajo para las traducciones
 
   return (
     <header className="bg-white/80 backdrop-blur-md border-b border-slate-200 sticky top-0 z-50 shadow-sm">
@@ -39,7 +42,7 @@ export const Header = ({ view, setView }: HeaderProps) => {
             }`}
           >
             <Search size={18} />{' '}
-            <span className="hidden md:inline">Explorar</span>
+            <span className="hidden md:inline">{t.explore}</span>
           </button>
           <button
             onClick={() => setView('favorites')}
@@ -53,7 +56,7 @@ export const Header = ({ view, setView }: HeaderProps) => {
               size={18}
               className={view === 'favorites' ? 'fill-red-500' : ''}
             />
-            <span className="hidden md:inline">Favoritos</span>
+            <span className="hidden md:inline">{t.favorites}</span>
           </button>
         </nav>
 
@@ -68,7 +71,7 @@ export const Header = ({ view, setView }: HeaderProps) => {
                   onClick={() => signOut(auth)}
                   className="text-[15px] uppercase text-slate-400 hover:text-red-500 font-bold cursor-pointer transition-colors"
                 >
-                  Salir
+                  {t.logout}
                 </button>
               </div>
               {user.photoURL ? (
@@ -90,7 +93,7 @@ export const Header = ({ view, setView }: HeaderProps) => {
               className="flex items-center gap-2 bg-slate-900 text-white p-2.5 rounded-xl hover:bg-blue-600 transition-all"
             >
               <LogIn size={20} />
-              Login
+              {t.login}
             </button>
           )}
         </div>
