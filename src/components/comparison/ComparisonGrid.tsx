@@ -9,19 +9,8 @@ import {
 } from 'recharts';
 import type { CarSpec } from '../../types/car';
 
-/* ============================
-   Colores fijos para coches
-============================ */
-const COLORS = [
-  '#2563eb', // azul
-  '#16a34a', // verde
-  '#dc2626', // rojo
-  '#7c3aed', // morado
-];
+const COLORS = ['#2563eb', '#16a34a', '#dc2626', '#7c3aed'];
 
-/* ============================
-   Helper local de comparación
-============================ */
 function getComparisonWinners(cars: CarSpec[]) {
   return {
     overall: [...cars].sort(
@@ -52,7 +41,6 @@ export const ComparisonGrid = ({
     <section className="bg-blue-50 p-6 rounded-2xl space-y-8">
       <h2 className="text-xl font-bold">Comparativa y recomendación</h2>
 
-      {/* ===== CONCLUSIÓN ===== */}
       <div className="grid md:grid-cols-4 gap-4">
         <WinnerCard
           icon={<Trophy />}
@@ -68,7 +56,6 @@ export const ComparisonGrid = ({
         />
       </div>
 
-      {/* ===== RADAR + LEYENDA ===== */}
       <div className="bg-white rounded-xl p-6 shadow-sm grid md:grid-cols-4 gap-6">
         {/* Radar */}
         <div className="md:col-span-3 h-80">
@@ -91,7 +78,6 @@ export const ComparisonGrid = ({
           </ResponsiveContainer>
         </div>
 
-        {/* Leyenda */}
         <div className="space-y-3">
           <h4 className="font-semibold text-sm">Modelos</h4>
           {cars.map((car, index) => (
@@ -108,7 +94,6 @@ export const ComparisonGrid = ({
         </div>
       </div>
 
-      {/* ===== TARJETAS DE COCHES ===== */}
       <div className="grid md:grid-cols-3 gap-6">
         {cars.map((c) => (
           <div
@@ -136,9 +121,6 @@ export const ComparisonGrid = ({
   );
 };
 
-/* ============================
-   Radar helpers
-============================ */
 function buildRadarData(cars: CarSpec[]) {
   return [
     {

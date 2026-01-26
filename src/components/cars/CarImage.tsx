@@ -62,7 +62,6 @@ export const CarImage = ({
     selectedColor
   );
 
-  // FUNCIÓN PARA EL GIRO MANUAL AL CLICAR
   const handleImageClick = () => {
     dispatch({
       type: 'SET_ANGLE_INDEX',

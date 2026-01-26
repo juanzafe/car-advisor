@@ -1,13 +1,11 @@
 @import 'tailwindcss';
 
-/* Limpieza base para que la web ocupe todo el espacio */
 body {
   margin: 0;
   padding: 0;
   display: block;
   min-height: 100vh;
   background-color: #f8fafc;
-  /* Evita el scroll horizontal molesto en móviles */
   overflow-x: hidden;
 }
 
@@ -18,21 +16,16 @@ body {
   padding: 0;
 }
 
-/* --- OPTIMIZACIÓN PARA MÓVILES (CARADVISOR PRO) --- */
 @media (max-width: 640px) {
-  /* Aumentamos el tamaño de fuente base para legibilidad */
   html {
     font-size: 16px;
   }
-
-  /* El contenedor principal de la App debe tener menos padding lateral */
   .container,
   .max-w-7xl {
     padding-left: 12px !important;
     padding-right: 12px !important;
   }
 
-  /* Ajuste de títulos para que no se vean diminutos */
   h1 {
     font-size: 1.8rem !important;
     line-height: 1.2;
@@ -42,19 +35,16 @@ body {
     font-size: 1.3rem !important;
   }
 
-  /* Hacemos que los botones sean más fáciles de pulsar con el pulgar */
   button {
     min-height: 44px;
   }
 
-  /* Si tienes un componente con flex, que pase a columna */
   .contenedor {
     flex-direction: column;
     gap: 16px;
   }
 }
 
-/* Suavizado de imágenes para el giro de los coches */
 img {
   -webkit-backface-visibility: hidden;
   backface-visibility: hidden;

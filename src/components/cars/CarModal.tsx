@@ -24,7 +24,6 @@ export const CarModal = ({
 
   const brandLogoUrl = `https://www.google.com/s2/favicons?sz=128&domain=${car.brand.toLowerCase().replace(/\s+/g, '')}.com`;
 
-  // Función idéntica para mantener coherencia en la traducción
   const translateValue = (dict: Record<string, string>, value: string) => {
     if (!value) return value;
     const key = value

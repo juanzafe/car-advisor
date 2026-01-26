@@ -10,13 +10,14 @@ import { PreferenceFilters } from './components/search/PreferenceFilters';
 import { FavoritesView } from './components/cars/FavoritesView';
 import PrivacyPolicy from './pages/PrivacyPolicy';
 import { Star, Trash2 } from 'lucide-react';
-import { translations } from './locales/translations'; // Importamos traducciones
+import { translations } from './locales/translations';
 import type { CarSpec, Preferences } from './types/car';
+import { CookieBanner } from './components/common/CookieBanner';
 
 export default function App() {
   const [user, authLoading] = useAuthState(auth);
   const [view, setView] = useState<'home' | 'favorites' | 'privacy'>('home');
-  const [lang, setLang] = useState<'es' | 'en'>('es'); // Estado del idioma
+  const [lang, setLang] = useState<'es' | 'en'>('es');
   const [cars, setCars] = useState<CarSpec[]>([]);
   const [selected, setSelected] = useState<CarSpec[]>([]);
   const [loading, setLoading] = useState(false);
@@ -28,7 +29,7 @@ export default function App() {
     preferredTraction: 'any',
   });
 
-  const t = translations[lang]; // Atajo para las traducciones
+  const t = translations[lang];
   const resultsRef = useRef<HTMLDivElement>(null);
   const comparisonRef = useRef<HTMLDivElement>(null);
 
@@ -94,7 +95,6 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-slate-50/50">
-      {/* Pasamos el idioma al Header si fuera necesario, o lo manejamos aquí */}
       <Header
         view={view === 'privacy' ? 'home' : view}
         setView={setView}
@@ -102,7 +102,6 @@ export default function App() {
       />
 
       <main className="max-w-7xl mx-auto p-6 space-y-8">
-        {/* Selector de Idioma Flotante */}
         <div className="flex justify-end gap-2 text-xs font-bold uppercase tracking-wider">
           <button
             onClick={() => setLang('es')}
@@ -217,6 +216,7 @@ export default function App() {
           </button>
         </div>
       </footer>
+      <CookieBanner lang={lang} />
     </div>
   );
 }

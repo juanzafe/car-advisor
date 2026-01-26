@@ -27,8 +27,6 @@ const imageCache = new Map<string, string>();
 export const carService = {
   angles: ['01', '05', '09', '13', '17', '21', '25', '29'],
   colorList: ['white', 'black', 'silver', 'blue', 'red'],
-
-  // LISTA NEGRA DE MOTOS (Términos que indican que NO es un coche)
   motoBlacklist: [
     'R1250',
     'R1200',
@@ -37,7 +35,7 @@ export const carService = {
     'S1000',
     'K1600',
     'G310',
-    'CE 04', // BMW Motos
+    'CE 04',
     'CBR',
     'CBF',
     'VFR',
@@ -45,27 +43,27 @@ export const carService = {
     'FORZA',
     'PCX',
     'SH125',
-    'AFRICA TWIN', // Honda
+    'AFRICA TWIN',
     'GSX',
     'V-STROM',
     'HAYABUSA',
     'BURGMAN',
-    'KATANA', // Suzuki
+    'KATANA',
     'NINJA',
     'Z900',
     'Z650',
     'VERSYS',
-    'VULCAN', // Kawasaki
+    'VULCAN',
     'MT-07',
     'MT-09',
     'TMAX',
     'XMAX',
     'TENERE',
-    'YZF', // Yamaha
+    'YZF',
     'DUCATI',
     'TRIUMPH',
     'HARLEY',
-    'VESPA', // Marcas puras
+    'VESPA',
   ],
 
   isMoto(model: string): boolean {
@@ -112,7 +110,6 @@ export const carService = {
 
     const uniqueMap = new Map<string, CarSpec>();
 
-    // 1. Locales
     const local = (carsDb as CarSpec[]).filter(
       (c) =>
         c.brand.toLowerCase().includes(term) ||
@@ -143,7 +140,6 @@ export const carService = {
       if (resByModel.ok) ninjaData.push(...(await resByModel.json()));
 
       ninjaData.forEach((car, i) => {
-        // FILTRO ANTI-MOTO APLICADO AQUÍ
         if (this.isMoto(car.model)) return;
 
         const spec = this.mapToCarSpec(car, i);
@@ -154,7 +150,6 @@ export const carService = {
       if (nhtsaRes.ok) {
         const nhtsaData: NHTSAResponse = await nhtsaRes.json();
         nhtsaData.Results.forEach((item, i) => {
-          // FILTRO ANTI-MOTO APLICADO AQUÍ TAMBIÉN
           if (this.isMoto(item.Model_Name)) return;
 
           const key = `${item.Make_Name}-${item.Model_Name}`.toUpperCase();

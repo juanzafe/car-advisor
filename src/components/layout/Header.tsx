@@ -1,7 +1,7 @@
 import { auth, loginWithGoogle } from '../../lib/firebase';
 import { signOut } from 'firebase/auth';
 import { useAuthState } from 'react-firebase-hooks/auth';
-import { LogIn, CarFront, Heart, Search, LogOut } from 'lucide-react'; // Añadimos LogOut
+import { LogIn, CarFront, Heart, Search, LogOut } from 'lucide-react';
 import { translations } from '../../locales/translations';
 
 interface HeaderProps {
@@ -66,7 +66,6 @@ export const Header = ({ view, setView, lang = 'es' }: HeaderProps) => {
         <div className="flex items-center gap-2 md:gap-4">
           {user ? (
             <div className="flex items-center gap-2 md:gap-3">
-              {/* Logout para Móvil (Solo icono) */}
               <button
                 onClick={() => signOut(auth)}
                 className="md:hidden p-2 text-slate-400 hover:text-red-500 transition-colors"

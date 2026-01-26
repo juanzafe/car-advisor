@@ -1,11 +1,11 @@
 import { useState } from 'react';
 import { Search } from 'lucide-react';
-import { translations } from '../../locales/translations'; // Importamos
+import { translations } from '../../locales/translations';
 
 interface SearchBarProps {
   onSearch: (query: string) => void | Promise<void>;
   isLoading?: boolean;
-  lang?: 'es' | 'en'; // Añadimos lang a la interface
+  lang?: 'es' | 'en';
 }
 
 export function SearchBar({
@@ -14,7 +14,7 @@ export function SearchBar({
   lang = 'es',
 }: SearchBarProps) {
   const [query, setQuery] = useState('');
-  const t = translations[lang]; // Atajo para las traducciones
+  const t = translations[lang];
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -32,7 +32,7 @@ export function SearchBar({
 
       <input
         type="text"
-        placeholder={t.searchPlaceholder} // Texto traducido
+        placeholder={t.searchPlaceholder}
         value={query}
         onChange={(e) => setQuery(e.target.value)}
         disabled={isLoading}
@@ -47,7 +47,7 @@ export function SearchBar({
           ${isLoading ? 'bg-slate-400' : 'bg-blue-600 hover:bg-blue-700'}
         `}
       >
-        {isLoading ? t.searching : t.searchButton} {/* Texto traducido */}
+        {isLoading ? t.searching : t.searchButton}
       </button>
     </form>
   );

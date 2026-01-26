@@ -14,12 +14,12 @@ export const FavoritesView = ({
 }: {
   onCompare: (car: CarSpec) => void;
   selectedIds: string[];
-  lang: 'es' | 'en'; // <--- AÑADE ESTO A LA INTERFACE
+  lang: 'es' | 'en';
 }) => {
   const [user] = useAuthState(auth);
   const [favorites, setFavorites] = useState<CarSpec[]>([]);
   const [loading, setLoading] = useState(true);
-  const t = translations[lang]; // Atajo para traducir títulos
+  const t = translations[lang];
 
   useEffect(() => {
     const loadFavs = async () => {
@@ -35,7 +35,7 @@ export const FavoritesView = ({
     <div className="space-y-6">
       <div className="flex items-center gap-3">
         <Heart className="text-red-500 fill-red-500" size={28} />
-        <h2 className="text-3xl font-bold">{t.favorites}</h2> {/* TRADUCIDO */}
+        <h2 className="text-3xl font-bold">{t.favorites}</h2>
       </div>
 
       {favorites.length === 0 && !loading ? (
@@ -52,7 +52,7 @@ export const FavoritesView = ({
           isLoading={loading}
           onCompare={onCompare}
           selectedIds={selectedIds}
-          lang={lang} // <--- CAMBIADO: Antes ponía "es", ahora usa la variable
+          lang={lang}
         />
       )}
     </div>
