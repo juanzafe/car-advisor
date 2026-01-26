@@ -1,64 +1,58 @@
-# 🏎️ Car Advisor Pro
+🏎️ Car Advisor Pro
+Link al proyecto: caradvisorpro.es
 
-[English Version Below]
+🇪🇸 Resumen del Proyecto
+Car Advisor Pro es una plataforma profesional de búsqueda y comparación de vehículos. El objetivo es centralizar datos técnicos complejos en una interfaz intuitiva para ayudar al usuario en su proceso de compra.
 
----
+💎 Lo que me hace sentir orgulloso de este código:
+CI/CD Pipeline: Automatización total de despliegues mediante GitHub Actions. Cada cambio en main se testea y se sube a Firebase sin intervención manual.
 
-## 🇪🇸 Versión en Español
+Normalización de Datos: Algoritmos para unificar respuestas de diferentes APIs (API Ninjas y NHTSA) en una interfaz coherente.
 
-**Car Advisor Pro** es una plataforma avanzada de búsqueda y comparación de vehículos diseñada para ayudar a los usuarios a tomar decisiones basadas en datos técnicos reales.
+Clean Code & Type Safety: Uso estricto de TypeScript para evitar errores en tiempo de ejecución y asegurar la escalabilidad.
 
-### 🚀 Características principales
+UX/UI Adaptable: Diseño "Mobile First" con Tailwind CSS, incluyendo un modo oscuro/claro implícito y soporte bilingüe.
 
-- **Búsqueda Inteligente:** Integración con múltiples APIs (API Ninjas y NHTSA) para obtener datos precisos.
-- **Filtro Anti-Motos:** Lógica personalizada para excluir vehículos de dos ruedas en marcas como BMW o Honda.
-- **Comparador en Tiempo Real:** Interfaz dinámica para comparar especificaciones de múltiples coches simultáneamente.
-- **Autenticación:** Sistema de usuarios con Firebase para guardar vehículos favoritos.
-- **Multi-idioma:** Soporte completo para Español e Inglés.
+🛠️ Stack Tecnológico
+Frontend: React 18, TypeScript, Tailwind CSS.
 
-### 🛠️ Tecnologías utilizadas
+Backend: Firebase (Auth, Firestore, Hosting).
 
-- React + TypeScript + Tailwind CSS.
-- Firebase Auth & Firestore.
-- APIs: API Ninjas, NHTSA vPIC, Imagin Studio.
+DevOps: GitHub Actions (CI/CD).
 
----
+Herramientas: Lucide Icons, Vite.
 
-## 🇺🇸 English Version
+🇺🇸 Project Overview (English)
+Car Advisor Pro is a professional vehicle search and comparison platform. It centralizes complex technical data into an intuitive interface to streamline the car-buying decision process.
 
-**Car Advisor Pro** is an advanced vehicle search and comparison platform designed to help users make informed decisions based on real technical data.
+🚀 Key Technical Highlights
+Automated CI/CD: Full deployment automation using GitHub Actions. Every push to main is automatically built and deployed to Firebase Hosting.
 
-### 🚀 Key Features
+Data Normalization: Custom logic to merge and sanitize data from multiple sources (API Ninjas, NHTSA vPIC) into a unified UI.
 
-- **Smart Search:** Deep integration with multiple APIs (API Ninjas and NHTSA) to fetch accurate technical specifications.
-- **Anti-Moto Filter:** Custom business logic to filter out two-wheeled vehicles for brands that share names (e.g., BMW, Honda, Suzuki).
-- **Real-Time Comparator:** A dynamic interface to compare specs across multiple cars side-by-side.
-- **User Authentication:** Firebase integration allowing users to save and manage their favorite vehicles.
-- **Multi-language Support:** Fully localized for both Spanish and English users.
-- **AdSense & SEO Optimized:** Built-in Privacy Policy and legal structure ready for Google AdSense approval.
+Type Safety: Built with a strict TypeScript architecture to ensure code reliability and easier maintenance.
 
-### 🛠️ Tech Stack
+Performance & SEO: Optimized for fast loading and AdSense ready, including a custom cookie consent system and privacy policies.
 
-- **Frontend:** React + TypeScript + Tailwind CSS.
-- **Backend/Auth:** Firebase Auth & Firestore.
-- **APIs:** API Ninjas, NHTSA vPIC API, Imagin Studio (Car Visuals).
-- **Icons:** Lucide-react.
+📦 Installation & Local Setup
+Clone & Install:
 
-### 📦 Installation & Setup
-
-1. Clone the repository:
-   git clone [https://github.com/juanzamudiofdez/car-advisor-pro.git](https://github.com/juanzamudiofdez/car-advisor-pro.git)
-
-Install dependencies:
-
+git clone https://github.com/juanzamudiofdez/car-advisor-pro.git
+cd car-advisor-pro
 npm install
-Set up environment variables (.env):
 
-VITE_NINJA_API_KEY=your_api_key
-VITE_FIREBASE_CONFIG=your_config
+Environment Variables: Create a .env file with your credentials:
 
-Run in development mode:
+VITE_FIREBASE_API_KEY=...
+VITE_NINJA_API_KEY=...
+
+Development:
 
 npm run dev
 
-Designed and developed by Juan Zamudio GitHub Profile | Contact
+👨‍💻 Author
+Juan Zamudio
+
+GitHub: @juanzafe
+
+Email: juanzamudiofdez@gmail.com
