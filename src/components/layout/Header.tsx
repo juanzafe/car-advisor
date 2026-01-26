@@ -1,30 +1,33 @@
 import { auth, loginWithGoogle } from '../../lib/firebase';
 import { signOut } from 'firebase/auth';
 import { useAuthState } from 'react-firebase-hooks/auth';
-import { LogIn, CarFront, Heart, Search } from 'lucide-react';
-import { translations } from '../../locales/translations'; // Importante importar esto
+import { LogIn, CarFront, Heart, Search, LogOut } from 'lucide-react'; // Añadimos LogOut
+import { translations } from '../../locales/translations';
 
 interface HeaderProps {
   view: 'home' | 'favorites';
   setView: (view: 'home' | 'favorites') => void;
-  lang?: 'es' | 'en'; // Añadimos la prop de lenguaje
+  lang?: 'es' | 'en';
 }
 
 export const Header = ({ view, setView, lang = 'es' }: HeaderProps) => {
   const [user] = useAuthState(auth);
-  const t = translations[lang]; // Atajo para las traducciones
+  const t = translations[lang];
 
   return (
     <header className="bg-white/80 backdrop-blur-md border-b border-slate-200 sticky top-0 z-50 shadow-sm">
-      <div className="max-w-7xl mx-auto px-6 h-20 flex justify-between items-center">
+      <div className="max-w-7xl mx-auto px-4 md:px-6 h-20 flex justify-between items-center">
         <div
-          className="flex items-center gap-4 group cursor-pointer"
+          className="flex items-center gap-2 md:gap-4 group cursor-pointer"
           onClick={() => setView('home')}
         >
-          <div className="bg-linear-to-br from-blue-600 to-indigo-700 p-2.5 rounded-2xl shadow-xl shadow-blue-200 transition-all duration-300 group-hover:rotate-6 group-hover:scale-110">
-            <CarFront className="text-white" size={32} strokeWidth={2.5} />
+          <div className="bg-linear-to-br from-blue-600 to-indigo-700 p-2 rounded-xl md:p-2.5 md:rounded-2xl shadow-xl shadow-blue-200 transition-all duration-300 group-hover:rotate-6 group-hover:scale-110">
+            <CarFront
+              className="text-white w-6 h-6 md:w-8 md:h-8"
+              strokeWidth={2.5}
+            />
           </div>
-          <h1 className="text-4xl font-black tracking-tighter uppercase hidden sm:block">
+          <h1 className="text-xl md:text-4xl font-black tracking-tighter uppercase hidden xs:block">
             <span className="italic bg-clip-text text-transparent bg-linear-to-r from-slate-900 to-blue-600 pr-1">
               Car-Advisor
             </span>
@@ -32,21 +35,21 @@ export const Header = ({ view, setView, lang = 'es' }: HeaderProps) => {
           </h1>
         </div>
 
-        <nav className="flex items-center gap-2 bg-slate-100 p-1 rounded-xl">
+        <nav className="flex items-center gap-1 md:gap-2 bg-slate-100 p-1 rounded-xl">
           <button
             onClick={() => setView('home')}
-            className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-bold transition-all ${
+            className={`flex items-center gap-2 px-3 md:px-4 py-2 rounded-lg text-sm font-bold transition-all ${
               view === 'home'
                 ? 'bg-white text-blue-600 shadow-sm'
                 : 'text-slate-500 hover:text-slate-700'
             }`}
           >
-            <Search size={18} />{' '}
+            <Search size={18} />
             <span className="hidden md:inline">{t.explore}</span>
           </button>
           <button
             onClick={() => setView('favorites')}
-            className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-bold transition-all ${
+            className={`flex items-center gap-2 px-3 md:px-4 py-2 rounded-lg text-sm font-bold transition-all ${
               view === 'favorites'
                 ? 'bg-white text-red-500 shadow-sm'
                 : 'text-slate-500 hover:text-slate-700'
@@ -60,9 +63,18 @@ export const Header = ({ view, setView, lang = 'es' }: HeaderProps) => {
           </button>
         </nav>
 
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-2 md:gap-4">
           {user ? (
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2 md:gap-3">
+              {/* Logout para Móvil (Solo icono) */}
+              <button
+                onClick={() => signOut(auth)}
+                className="md:hidden p-2 text-slate-400 hover:text-red-500 transition-colors"
+                aria-label={t.logout}
+              >
+                <LogOut size={20} />
+              </button>
+
               <div className="hidden md:block text-right">
                 <p className="text-s font-black text-slate-900 leading-none">
                   {user.displayName?.split(' ')[0]}
@@ -74,15 +86,16 @@ export const Header = ({ view, setView, lang = 'es' }: HeaderProps) => {
                   {t.logout}
                 </button>
               </div>
+
               {user.photoURL ? (
                 <img
                   src={user.photoURL}
                   alt="avatar"
                   referrerPolicy="no-referrer"
-                  className="w-10 h-10 rounded-full border-2 border-blue-500/20"
+                  className="w-8 h-8 md:w-10 md:h-10 rounded-full border-2 border-blue-500/20"
                 />
               ) : (
-                <div className="w-10 h-10 rounded-full bg-slate-300 flex items-center justify-center text-xs font-bold text-slate-600">
+                <div className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-slate-300 flex items-center justify-center text-xs font-bold text-slate-600">
                   {user.displayName?.[0]}
                 </div>
               )}
@@ -90,10 +103,10 @@ export const Header = ({ view, setView, lang = 'es' }: HeaderProps) => {
           ) : (
             <button
               onClick={loginWithGoogle}
-              className="flex items-center gap-2 bg-slate-900 text-white p-2.5 rounded-xl hover:bg-blue-600 transition-all"
+              className="flex items-center gap-2 bg-slate-900 text-white px-3 py-2 md:p-2.5 rounded-xl hover:bg-blue-600 transition-all text-sm md:text-base"
             >
               <LogIn size={20} />
-              {t.login}
+              <span className="hidden xs:inline">{t.login}</span>
             </button>
           )}
         </div>

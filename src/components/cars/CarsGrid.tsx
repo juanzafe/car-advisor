@@ -32,7 +32,9 @@ export function CarsGrid({
   if (!cars.length) {
     return (
       <div className="text-center py-16 text-slate-500">
-        Busca una marca para ver resultados
+        {lang === 'es'
+          ? 'Busca una marca para ver resultados'
+          : 'Search for a brand to see results'}
       </div>
     );
   }
