@@ -27,7 +27,7 @@ export const Header = ({ view, setView, lang = 'es' }: HeaderProps) => {
               strokeWidth={2.5}
             />
           </div>
-          <h1 className="text-xl md:text-4xl font-black tracking-tighter uppercase hidden xs:block">
+          <h1 className="text-xl md:text-4xl font-black tracking-tighter uppercase hidden sm:block">
             <span className="italic bg-clip-text text-transparent bg-linear-to-r from-slate-900 to-blue-600 pr-1">
               Car-Advisor
             </span>
