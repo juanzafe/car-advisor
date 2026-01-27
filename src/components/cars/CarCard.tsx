@@ -31,20 +31,69 @@ export const CarCard = ({
   lang?: 'es' | 'en';
 }) => {
   const t = translations[lang];
+  const [user] = useAuthState(auth);
+
+  // El estado inicial debe ser lo que viene de la prop car
   const [selectedColor, setSelectedColor] = useState(
     car.selectedColor || 'white'
   );
   const [isFavorite, setIsFavorite] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [user] = useAuthState(auth);
 
+  // Sincronización: Solo reseteamos si el coche cambia físicamente (cambio de ID)
+  const [prevCarId, setPrevCarId] = useState(car.id);
+  if (car.id !== prevCarId) {
+    setPrevCarId(car.id);
+    setSelectedColor(car.selectedColor || 'white');
+  }
+
+  // EFECTO CLAVE: Cargar estado de favorito y su color guardado
   useEffect(() => {
-    const check = async () => {
-      const data = await favoriteService.getFavoriteDetail(user?.uid, car.id);
-      if (data) setIsFavorite(true);
+    let isMounted = true;
+
+    const checkFavoriteStatus = async () => {
+      if (!user?.uid) {
+        setIsFavorite(false);
+        return;
+      }
+
+      try {
+        const data = await favoriteService.getFavoriteDetail(user.uid, car.id);
+        if (isMounted) {
+          setIsFavorite(!!data);
+          // Si en Firebase hay un color guardado, este manda sobre la prop inicial
+          if (data?.selectedColor) {
+            setSelectedColor(data.selectedColor);
+          }
+        }
+      } catch (error) {
+        console.error('Error checking favorite:', error);
+      }
     };
-    check();
+
+    checkFavoriteStatus();
+    return () => {
+      isMounted = false;
+    };
   }, [user?.uid, car.id]);
+
+  // 4. Sincronización automática: Si el usuario cambia el color y el coche
+  // ya es favorito, actualizamos la base de datos automáticamente.
+  useEffect(() => {
+    const syncColor = async () => {
+      // Solo disparamos la actualización si es favorito y tenemos usuario
+      if (isFavorite && user?.uid) {
+        try {
+          await favoriteService.addFavorite(user.uid, car, selectedColor);
+          console.log(`Color ${selectedColor} actualizado en Firebase`);
+        } catch (error) {
+          console.error('Error actualizando color en favorito:', error);
+        }
+      }
+    };
+
+    syncColor();
+  }, [selectedColor, isFavorite, user?.uid, car]);
 
   const handleFavoriteClick = async (e: React.MouseEvent) => {
     e.stopPropagation();

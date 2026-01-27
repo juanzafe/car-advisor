@@ -187,9 +187,6 @@ const WinnerCard = ({
   </div>
 );
 
-/**
- * COMPONENTE PRINCIPAL
- */
 export const ComparisonGrid = ({
   cars,
   onRemove,
