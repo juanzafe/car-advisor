@@ -3,7 +3,7 @@ import { CarCard } from './CarCard';
 
 interface CarsGridProps {
   cars: CarSpec[];
-  onCompare: (car: CarSpec) => void;
+  onCompare: (car: CarSpec, color: string) => void;
   isLoading?: boolean;
   selectedIds?: string[];
   lang: 'es' | 'en';
@@ -45,7 +45,7 @@ export function CarsGrid({
         <CarCard
           key={car.id}
           car={car}
-          onCompare={() => onCompare(car)}
+          onCompare={(color) => onCompare(car, color)}
           isSelected={selectedIds?.includes(car.id) || false}
           lang={lang}
         />

@@ -63,15 +63,21 @@ export const favoriteService = {
     const q = query(collection(db, 'users', userId, 'favorites'));
     const querySnapshot = await getDocs(q);
 
-    return querySnapshot.docs.map((doc) => ({
-      ...(doc.data() as CarSpec),
-      image: carService.getCarImage(
-        doc.data().brand,
-        doc.data().model,
-        doc.data().year,
-        '01',
-        doc.data().selectedColor || 'white'
-      ),
-    }));
+    return querySnapshot.docs.map((doc) => {
+      const data = doc.data();
+      const color = data.selectedColor || 'white'; // Recuperamos el color guardado
+
+      return {
+        ...(data as CarSpec),
+        selectedColor: color, // <--- MUY IMPORTANTE: Inyectarlo aquí para que CarCard lo vea
+        image: carService.getCarImage(
+          data.brand,
+          data.model,
+          data.year,
+          '01',
+          color // Usamos el color recuperado para la imagen
+        ),
+      };
+    });
   },
 };

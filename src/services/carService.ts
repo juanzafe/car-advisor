@@ -18,6 +18,7 @@ interface NHTSAResult {
   Make_Name: string;
   Model_Name: string;
 }
+
 interface NHTSAResponse {
   Results: NHTSAResult[];
 }
@@ -71,6 +72,47 @@ export const carService = {
     return this.motoBlacklist.some((term) => m.includes(term));
   },
 
+  calculateSmartData(
+    hp: number,
+    fuelType: string,
+    weight: number,
+    make: string
+  ) {
+    let topSpeed: number;
+    if (hp <= 110) topSpeed = 155 + hp * 0.25;
+    else if (hp <= 210) topSpeed = 175 + hp * 0.18;
+    else if (hp <= 450) topSpeed = 210 + hp * 0.12;
+    else topSpeed = 260 + hp * 0.06;
+    if (fuelType.toLowerCase().includes('eléctrico') && hp < 500) {
+      topSpeed = Math.min(topSpeed, 210);
+    }
+
+    const ratio = weight / hp;
+    const acceleration = Number(Math.max(2.2, ratio * 0.85).toFixed(1));
+    const brand = make.toLowerCase();
+    let basePrice = 18000;
+
+    const isLuxury =
+      /(ferrari|lamborghini|porsche|mclaren|bugatti|bentley|rolls)/.test(brand);
+    const isPremium = /(bmw|mercedes|audi|lexus|volvo|tesla|land rover)/.test(
+      brand
+    );
+
+    if (isLuxury) basePrice = 120000 + hp * 150;
+    else if (isPremium) basePrice = 35000 + hp * 90;
+    else basePrice = 15000 + hp * 65;
+
+    const finalPrice = fuelType.toLowerCase().includes('eléctrico')
+      ? basePrice * 1.25
+      : basePrice;
+
+    return {
+      topSpeed: Math.round(topSpeed),
+      acceleration,
+      estimatedPrice: Math.round(finalPrice / 100) * 100,
+    };
+  },
+
   getCarImage(
     make: string,
     model: string,
@@ -81,6 +123,7 @@ export const carService = {
   ): string {
     const cacheKey = `${make}-${model}-${year}-${angle}-${color}-${isFull}`;
     if (imageCache.has(cacheKey)) return imageCache.get(cacheKey)!;
+
     const normalizedModel = model
       .toLowerCase()
       .replace(/serie\s?/i, '')
@@ -99,6 +142,7 @@ export const carService = {
     url.searchParams.append('paintDescription', color);
     url.searchParams.append('width', isFull ? '1200' : '500');
     url.searchParams.append('zoomLevel', '0');
+
     const finalUrl = url.toString();
     imageCache.set(cacheKey, finalUrl);
     return finalUrl;
@@ -107,7 +151,6 @@ export const carService = {
   async fetchCars(query: string): Promise<CarSpec[]> {
     const term = query.trim().toLowerCase();
     if (!term) return [];
-
     const uniqueMap = new Map<string, CarSpec>();
 
     const local = (carsDb as CarSpec[]).filter(
@@ -141,7 +184,6 @@ export const carService = {
 
       ninjaData.forEach((car, i) => {
         if (this.isMoto(car.model)) return;
-
         const spec = this.mapToCarSpec(car, i);
         const key = `${spec.brand}-${spec.model}`.toUpperCase();
         if (!uniqueMap.has(key)) uniqueMap.set(key, spec);
@@ -151,39 +193,30 @@ export const carService = {
         const nhtsaData: NHTSAResponse = await nhtsaRes.json();
         nhtsaData.Results.forEach((item, i) => {
           if (this.isMoto(item.Model_Name)) return;
-
           const key = `${item.Make_Name}-${item.Model_Name}`.toUpperCase();
-          if (!uniqueMap.has(key)) {
+          if (!uniqueMap.has(key))
             uniqueMap.set(
               key,
               this.generateSmartSpecs(item.Make_Name, item.Model_Name, i)
             );
-          }
         });
       }
-
       return Array.from(uniqueMap.values());
-    } catch (error) {
-      console.error('Error fetching cars:', error);
+    } catch {
       return Array.from(uniqueMap.values());
     }
   },
 
   mapToCarSpec(car: NinjaCarResponse, index: number): CarSpec {
-    const baseHp = car.horsepower || 0;
+    const hp = car.horsepower || (car.fuel_type === 'electricity' ? 200 : 120);
     const consumption =
       car.combination_mpg > 0
         ? Number((235.21 / car.combination_mpg).toFixed(1))
         : 0;
+    const fuelType = car.fuel_type === 'electricity' ? 'Eléctrico' : 'Gasolina';
+    const weight = Math.round(1100 + hp * 1.5);
 
-    let hp = baseHp;
-    let cons = consumption;
-
-    if (baseHp === 0) {
-      const smart = this.generateSmartSpecs(car.make, car.model, index);
-      hp = smart.hp;
-      cons = smart.consumption;
-    }
+    const smartData = this.calculateSmartData(hp, fuelType, weight, car.make);
 
     return {
       id: `ninja-${index}-${car.model}`,
@@ -191,16 +224,16 @@ export const carService = {
       model: car.model.toUpperCase(),
       year: car.year,
       hp,
-      consumption: cons || 6.5,
-      weight: Math.round(1100 + hp * 1.5),
-      price: 0,
+      consumption: consumption || 6.5,
+      weight,
+      price: smartData.estimatedPrice,
       traction: (car.drive?.toLowerCase().includes('all') ||
       car.drive?.includes('4')
         ? 'AWD'
         : 'FWD') as Traction,
-      acceleration: Number((12 - hp / 45).toFixed(1)),
-      topSpeed: Math.round(150 + hp / 2),
-      fuelType: car.fuel_type === 'electricity' ? 'Eléctrico' : 'Gasolina',
+      acceleration: smartData.acceleration,
+      topSpeed: smartData.topSpeed,
+      fuelType,
       transmission: car.transmission === 'a' ? 'Auto' : 'Manual',
       image: this.getCarImage(
         car.make,
@@ -218,55 +251,33 @@ export const carService = {
 
   generateSmartSpecs(make: string, model: string, index: number): CarSpec {
     const fullSearch = `${make} ${model}`.toLowerCase();
-    let hp = 110;
-    let cons = 5.4;
-    let acc = 10.5;
-    let weight = 1300;
-    let fuel = 'Híbrido';
+    const fuel = 'Gasolina'; // Corregido: 'fuel' ahora es const
+    let hp = 110,
+      cons = 5.4,
+      weight = 1300;
 
-    const isSuperSport =
-      /(ferrari|lamborghini|porsche|mclaren|bugatti|911|huracan|aventador)/.test(
-        fullSearch
-      );
-    const isSport =
-      /( m2| m3| m4| m5| rs| amg| gti| cupra| type r| mustang| camaro| corvette| supra)/.test(
-        fullSearch
-      );
-    const isBigSUV =
-      /( q7| q8| x5| x6| x7| cayenne| range rover| land cruiser| touareg| tucson| sportage)/.test(
-        fullSearch
-      );
-    const isSmall =
-      /( 500| aygo| i10| yaris| polo| corsa| micra| sandero| clio| c3| picanto)/.test(
-        fullSearch
-      );
-
-    if (isSuperSport) {
+    if (/(ferrari|lamborghini|porsche|911|huracan)/.test(fullSearch)) {
       hp = 600;
       cons = 14.5;
-      acc = 3.2;
       weight = 1650;
-      fuel = 'Gasolina';
-    } else if (isSport) {
+    } else if (/( m2| m3| m4| rs| amg| gti| cupra)/.test(fullSearch)) {
       hp = 420;
       cons = 10.2;
-      acc = 4.3;
       weight = 1550;
-      fuel = 'Gasolina';
-    } else if (isBigSUV) {
+    } else if (
+      /( q7| x5| cayenne| range rover| tucson| sportage)/.test(fullSearch)
+    ) {
       hp = 190;
       cons = 7.5;
-      acc = 8.5;
       weight = 1900;
-    } else if (isSmall) {
+    } else if (/( 500| aygo| yaris| polo| clio| sandero)/.test(fullSearch)) {
       hp = 85;
       cons = 4.5;
-      acc = 12.8;
       weight = 1050;
     }
 
-    const variation = (index % 10) * 5;
-    hp += variation;
+    hp += (index % 10) * 5;
+    const smartData = this.calculateSmartData(hp, fuel, weight, make);
 
     return {
       id: `smart-${index}-${model}`,
@@ -275,10 +286,10 @@ export const carService = {
       year: 2024,
       hp,
       consumption: cons,
-      acceleration: acc,
+      acceleration: smartData.acceleration,
       weight,
-      price: 0,
-      topSpeed: Math.round(hp * 0.7 + 115),
+      price: smartData.estimatedPrice,
+      topSpeed: smartData.topSpeed,
       fuelType: fuel,
       transmission: hp > 170 ? 'Auto' : 'Manual',
       traction: (hp > 280 || weight > 1800 ? 'AWD' : 'FWD') as Traction,

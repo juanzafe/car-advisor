@@ -26,7 +26,7 @@ export const CarCard = ({
   lang = 'es',
 }: {
   car: CarSpec;
-  onCompare: () => void;
+  onCompare: (color: string) => void;
   isSelected: boolean;
   lang?: 'es' | 'en';
 }) => {
@@ -73,7 +73,6 @@ export const CarCard = ({
     return colors[color] || '#FFFFFF';
   };
 
-  // Función de ayuda para normalizar y traducir valores técnicos
   const translateValue = (dict: Record<string, string>, value: string) => {
     if (!value) return value;
     const key = value
@@ -188,7 +187,7 @@ export const CarCard = ({
 
           <div className="mt-auto pt-2">
             <button
-              onClick={onCompare}
+              onClick={() => onCompare(selectedColor)}
               disabled={isSelected}
               className={`w-full py-3 rounded-xl font-bold transition-all ${
                 isSelected

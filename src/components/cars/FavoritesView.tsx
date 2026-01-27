@@ -5,14 +5,15 @@ import { favoriteService } from '../../services/favoriteService';
 import { CarsGrid } from './CarsGrid';
 import type { CarSpec } from '../../types/car';
 import { Heart } from 'lucide-react';
-import { translations } from '../../locales/translations'; // Importante
+import { translations } from '../../locales/translations';
 
 export const FavoritesView = ({
   onCompare,
   selectedIds,
   lang = 'es',
 }: {
-  onCompare: (car: CarSpec) => void;
+  // 1. Asegúrate de que la definición de la prop sea exacta
+  onCompare: (car: CarSpec, color: string) => void;
   selectedIds: string[];
   lang: 'es' | 'en';
 }) => {
@@ -23,8 +24,12 @@ export const FavoritesView = ({
 
   useEffect(() => {
     const loadFavs = async () => {
+      if (!user?.uid) {
+        setLoading(false);
+        return;
+      }
       setLoading(true);
-      const data = await favoriteService.getFavorites(user?.uid);
+      const data = await favoriteService.getFavorites(user.uid);
       setFavorites(data);
       setLoading(false);
     };
@@ -50,6 +55,7 @@ export const FavoritesView = ({
         <CarsGrid
           cars={favorites}
           isLoading={loading}
+          // 2. Aquí está la clave: pasamos la función que recibimos arriba
           onCompare={onCompare}
           selectedIds={selectedIds}
           lang={lang}

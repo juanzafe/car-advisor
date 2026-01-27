@@ -20,6 +20,7 @@ import {
   ResponsiveContainer,
 } from 'recharts';
 import type { CarSpec } from '../../types/car';
+import { carService } from '../../services/carService';
 
 const COLORS = ['#2563eb', '#16a34a', '#dc2626', '#7c3aed'];
 
@@ -58,6 +59,15 @@ export const ComparisonCard = ({
   car: CarSpec;
   onRemove: (id: string) => void;
 }) => {
+  // Generamos la URL de la imagen usando el color seleccionado o blanco por defecto
+  const carImageUrl = carService.getCarImage(
+    car.brand,
+    car.model,
+    car.year,
+    '01',
+    car.selectedColor || 'white'
+  );
+
   const formattedPrice =
     car.price > 0
       ? new Intl.NumberFormat('es-ES', {
@@ -69,14 +79,11 @@ export const ComparisonCard = ({
 
   return (
     <div className="bg-white rounded-2xl overflow-hidden shadow-lg border border-slate-200 flex flex-col h-full hover:shadow-2xl transition-all duration-300">
-      <div className="relative aspect-video bg-slate-100">
+      <div className="relative aspect-video bg-slate-100 flex items-center justify-center p-4">
         <img
-          src={
-            car.image ||
-            'https://images.unsplash.com/photo-1542362567-b051c63b9a56?q=80&w=800'
-          }
+          src={carImageUrl}
           alt={car.model}
-          className="w-full h-full object-cover"
+          className="w-full h-full object-contain"
         />
         <button
           onClick={() => onRemove(car.id)}
@@ -84,6 +91,22 @@ export const ComparisonCard = ({
         >
           <X size={18} strokeWidth={3} />
         </button>
+
+        {/* Indicador visual del color seleccionado */}
+        {car.selectedColor && (
+          <div className="absolute bottom-2 left-3 flex items-center gap-1.5 bg-white/80 backdrop-blur-sm px-2 py-1 rounded-full border border-slate-200 shadow-sm">
+            <div
+              className="w-3 h-3 rounded-full border border-slate-300"
+              style={{
+                backgroundColor:
+                  car.selectedColor === 'white' ? '#FFFFFF' : car.selectedColor,
+              }}
+            />
+            <span className="text-[10px] font-bold uppercase text-slate-500">
+              {car.selectedColor}
+            </span>
+          </div>
+        )}
       </div>
 
       <div className="p-6 flex flex-col grow">
@@ -136,7 +159,7 @@ export const ComparisonCard = ({
 };
 
 /**
- * GANADORES (ETIQUETAS MÁS GRANDES)
+ * GANADORES
  */
 const WinnerCard = ({
   icon,
@@ -154,7 +177,6 @@ const WinnerCard = ({
       {icon}
     </div>
     <div className="flex flex-col">
-      {/* Etiqueta ahora más grande y visible */}
       <span className="text-[11px] font-black uppercase tracking-wider text-slate-400 mb-0.5">
         {label}
       </span>
@@ -207,7 +229,6 @@ export const ComparisonGrid = ({
         />
       </div>
 
-      {/* Gráfico Radar */}
       <div className="bg-white rounded-3xl p-8 shadow-xl border border-slate-200 h-100">
         <ResponsiveContainer width="100%" height="100%">
           <RadarChart data={buildRadarData(cars)}>
@@ -232,7 +253,6 @@ export const ComparisonGrid = ({
         </ResponsiveContainer>
       </div>
 
-      {/* Grid de Tarjetas */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
         {cars.map((car) => (
           <ComparisonCard key={car.id} car={car} onRemove={onRemove} />
@@ -242,7 +262,6 @@ export const ComparisonGrid = ({
   );
 };
 
-// Lógica de cálculo
 function getComparisonWinners(cars: CarSpec[]) {
   return {
     overall: [...cars].sort(

@@ -73,10 +73,12 @@ export default function App() {
     [preferences, view]
   );
 
-  const addToCompare = useCallback((car: CarSpec) => {
-    setSelected((prev) =>
-      prev.some((c) => c.id === car.id) ? prev : [...prev, car]
-    );
+  const addToCompare = useCallback((car: CarSpec, color: string) => {
+    setSelected((prev) => {
+      if (prev.some((c) => c.id === car.id)) return prev;
+      const carWithColor = { ...car, selectedColor: color };
+      return [...prev, carWithColor];
+    });
   }, []);
 
   const removeFromCompare = useCallback((id: string) => {
