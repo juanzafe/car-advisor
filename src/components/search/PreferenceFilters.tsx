@@ -30,16 +30,21 @@ export const PreferenceFilters = ({
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
         <div className="space-y-3">
-          <div className="flex justify-between items-center text-sm font-medium">
+          <label
+            htmlFor="min-power-range"
+            className="flex justify-between items-center text-sm font-medium cursor-pointer"
+          >
             <span className="flex items-center gap-2 text-slate-500">
               <Zap size={16} /> {t.minPower}
             </span>
             <span className="text-blue-600 font-bold">
               {preferences.minPower} {lang === 'es' ? 'CV' : 'HP'}
             </span>
-          </div>
+          </label>
           <input
             type="range"
+            id="min-power-range"
+            name="minPower"
             min="50"
             max="600"
             step="10"
@@ -50,16 +55,21 @@ export const PreferenceFilters = ({
         </div>
 
         <div className="space-y-3">
-          <div className="flex justify-between items-center text-sm font-medium">
+          <label
+            htmlFor="max-consumption-range"
+            className="flex justify-between items-center text-sm font-medium cursor-pointer"
+          >
             <span className="flex items-center gap-2 text-slate-500">
               <Fuel size={16} /> {t.maxConsumption}
             </span>
             <span className="text-blue-600 font-bold">
               {preferences.maxConsumption} L
             </span>
-          </div>
+          </label>
           <input
             type="range"
+            id="max-consumption-range"
+            name="maxConsumption"
             min="3"
             max="20"
             step="0.5"
@@ -72,7 +82,10 @@ export const PreferenceFilters = ({
         </div>
 
         <div className="space-y-3">
-          <div className="flex justify-between items-center text-sm font-medium">
+          <label
+            htmlFor="max-price-range"
+            className="flex justify-between items-center text-sm font-medium cursor-pointer"
+          >
             <span className="flex items-center gap-2 text-slate-500">
               <Wallet size={16} /> {t.budget}
             </span>
@@ -80,9 +93,11 @@ export const PreferenceFilters = ({
               {preferences.maxPrice.toLocaleString()}
               {lang === 'es' ? '€' : '$'}
             </span>
-          </div>
+          </label>
           <input
             type="range"
+            id="max-price-range"
+            name="maxPrice"
             min="10000"
             max="200000"
             step="5000"
@@ -93,12 +108,15 @@ export const PreferenceFilters = ({
         </div>
 
         <div className="space-y-3">
-          <div className="flex justify-between items-center text-sm font-medium text-slate-500 mb-1">
-            <span className="flex items-center gap-2">
-              <Gauge size={16} /> {t.idealTraction}
-            </span>
-          </div>
+          <label
+            htmlFor="traction-select"
+            className="flex items-center gap-2 text-sm font-medium text-slate-500 mb-1 cursor-pointer"
+          >
+            <Gauge size={16} /> {t.idealTraction}
+          </label>
           <select
+            id="traction-select"
+            name="preferredTraction"
             value={preferences.preferredTraction}
             onChange={(e) => handleChange('preferredTraction', e.target.value)}
             className="w-full p-2 bg-slate-50 border border-slate-200 rounded-xl text-sm font-semibold text-slate-700 outline-none focus:border-blue-500 transition-colors"
