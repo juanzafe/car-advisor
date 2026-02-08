@@ -1,53 +1,41 @@
-🏎️ Car Advisor Pro
-Link al proyecto: caradvisorpro.es
+# 🏎️ Car Advisor Pro
 
-🇪🇸 Resumen del Proyecto
-Car Advisor Pro es una plataforma profesional de búsqueda y comparación de vehículos. El objetivo es centralizar datos técnicos complejos en una interfaz intuitiva para ayudar al usuario en su proceso de compra.
+**Live Project:** [caradvisorpro.es](https://caradvisorpro.es)
 
-💎 Lo que me hace sentir orgulloso de este código:
-CI/CD Pipeline: Automatización total de despliegues mediante GitHub Actions. Cada cambio en main se testea y se sube a Firebase sin intervención manual.
+## 🌟 Project Overview
 
-Normalización de Datos: Algoritmos para unificar respuestas de diferentes APIs (API Ninjas y NHTSA) en una interfaz coherente.
+Car Advisor Pro is a professional vehicle search and comparison platform. I built this tool to centralize complex technical specifications into an intuitive interface, helping users make data-driven decisions during their car-buying process.
 
-Clean Code & Type Safety: Uso estricto de TypeScript para evitar errores en tiempo de ejecución y asegurar la escalabilidad.
+## 💎 Technical Highlights (What I'm proud of)
 
-UX/UI Adaptable: Diseño "Mobile First" con Tailwind CSS, incluyendo un modo oscuro/claro implícito y soporte bilingüe.
+- **Automated CI/CD Pipeline:** Fully automated deployments using **GitHub Actions**. Every push to `main` is automatically tested and deployed to **Firebase Hosting**, ensuring a seamless and error-free release cycle.
+- **Data Normalization Logic:** Developed custom algorithms to merge and sanitize inconsistent data from multiple external sources (**API Ninjas** and **NHTSA vPIC**) into a unified, clean UI.
+- **Type Safety & Scalability:** Built with a strict **TypeScript** architecture. Using custom interfaces and types, I've minimized runtime errors and ensured the codebase remains maintainable as features grow.
+- **Optimized UX/UI:** Designed with a "Mobile First" approach using **Tailwind CSS**. It includes a performance-oriented architecture, AdSense-ready layouts, and a custom-built cookie consent system to comply with privacy regulations.
 
-🛠️ Stack Tecnológico
-Frontend: React 18, TypeScript, Tailwind CSS.
+## 🛠️ Tech Stack
 
-Backend: Firebase (Auth, Firestore, Hosting).
+- **Frontend:** React 18, TypeScript, Tailwind CSS.
+- **Backend:** Firebase (Auth, Firestore, Hosting).
+- **DevOps:** GitHub Actions (CI/CD).
+- **Tools:** Vite, Lucide Icons, Headless UI.
 
-DevOps: GitHub Actions (CI/CD).
+## 📦 Installation & Local Setup
 
-Herramientas: Lucide Icons, Vite.
+1. **Clone & Install:**
+   ```bash
+   git clone [https://github.com/juanzafe/car-advisor-pro.git](https://github.com/juanzafe/car-advisor-pro.git)
+   cd car-advisor-pro
+   npm install
+   Environment Variables: Create a .env file in the root directory and add your credentials:
+   ```
 
-🇺🇸 Project Overview (English)
-Car Advisor Pro is a professional vehicle search and comparison platform. It centralizes complex technical data into an intuitive interface to streamline the car-buying decision process.
+Fragmento de código
+VITE_FIREBASE_API_KEY=your_api_key
+VITE_NINJA_API_KEY=your_ninja_key
+Development Mode:
 
-🚀 Key Technical Highlights
-Automated CI/CD: Full deployment automation using GitHub Actions. Every push to main is automatically built and deployed to Firebase Hosting.
-
-Data Normalization: Custom logic to merge and sanitize data from multiple sources (API Ninjas, NHTSA vPIC) into a unified UI.
-
-Type Safety: Built with a strict TypeScript architecture to ensure code reliability and easier maintenance.
-
-Performance & SEO: Optimized for fast loading and AdSense ready, including a custom cookie consent system and privacy policies.
-
-📦 Installation & Local Setup
-Clone & Install:
-
-git clone https://github.com/juanzamudiofdez/car-advisor-pro.git
-cd car-advisor-pro
-npm install
-
-Environment Variables: Create a .env file with your credentials:
-
-VITE_FIREBASE_API_KEY=...
-VITE_NINJA_API_KEY=...
-
-Development:
-
+Bash
 npm run dev
 
 👨‍💻 Author
@@ -55,4 +43,8 @@ Juan Zamudio
 
 GitHub: @juanzafe
 
+LinkedIn: juanzamudio-a3a20375
+
 Email: juanzamudiofdez@gmail.com
+
+Developed by a Frontend Developer.
