@@ -6,6 +6,10 @@
 
 Car Advisor Pro is a professional vehicle search and comparison platform. I built this tool to centralize complex technical specifications into an intuitive interface, helping users make data-driven decisions during their car-buying process.
 
+<p align="center">
+  <img src="src/assets/Animationcaradvisor.gif" alt="Demo de Car Advisor Pro" width="600">
+</p>
+
 ## 💎 Technical Highlights (What I'm proud of)
 
 - **Automated CI/CD Pipeline:** Fully automated deployments using **GitHub Actions**. Every push to `main` is automatically tested and deployed to **Firebase Hosting**, ensuring a seamless and error-free release cycle.
