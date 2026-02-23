@@ -24,9 +24,6 @@ import { carService } from '../../services/carService';
 
 const COLORS = ['#2563eb', '#16a34a', '#dc2626', '#7c3aed'];
 
-/**
- * COMPONENTE DE FILA TÉCNICA
- */
 const SpecRow = ({
   icon,
   label,
@@ -49,9 +46,6 @@ const SpecRow = ({
   </div>
 );
 
-/**
- * TARJETA DE COMPARACIÓN
- */
 export const ComparisonCard = ({
   car,
   onRemove,
@@ -59,7 +53,6 @@ export const ComparisonCard = ({
   car: CarSpec;
   onRemove: (id: string) => void;
 }) => {
-  // Generamos la URL de la imagen usando el color seleccionado o blanco por defecto
   const carImageUrl = carService.getCarImage(
     car.brand,
     car.model,
@@ -92,7 +85,6 @@ export const ComparisonCard = ({
           <X size={18} strokeWidth={3} />
         </button>
 
-        {/* Indicador visual del color seleccionado */}
         {car.selectedColor && (
           <div className="absolute bottom-2 left-3 flex items-center gap-1.5 bg-white/80 backdrop-blur-sm px-2 py-1 rounded-full border border-slate-200 shadow-sm">
             <div
@@ -158,9 +150,6 @@ export const ComparisonCard = ({
   );
 };
 
-/**
- * GANADORES
- */
 const WinnerCard = ({
   icon,
   label,

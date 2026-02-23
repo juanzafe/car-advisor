@@ -6,10 +6,9 @@ interface CookieBannerProps {
 }
 
 export const CookieBanner = ({ lang }: CookieBannerProps) => {
-  // Inicializamos el estado consultando localStorage directamente
   const [isVisible, setIsVisible] = useState(() => {
     const consent = localStorage.getItem('cookie-consent');
-    return !consent; // Si no hay consent, es visible
+    return !consent;
   });
 
   const acceptCookies = () => {

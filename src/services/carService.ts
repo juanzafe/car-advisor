@@ -251,7 +251,7 @@ export const carService = {
 
   generateSmartSpecs(make: string, model: string, index: number): CarSpec {
     const fullSearch = `${make} ${model}`.toLowerCase();
-    const fuel = 'Gasolina'; // Corregido: 'fuel' ahora es const
+    const fuel = 'Gasolina';
     let hp = 110,
       cons = 5.4,
       weight = 1300;

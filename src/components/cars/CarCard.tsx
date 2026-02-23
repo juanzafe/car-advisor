@@ -33,21 +33,18 @@ export const CarCard = ({
   const t = translations[lang];
   const [user] = useAuthState(auth);
 
-  // El estado inicial debe ser lo que viene de la prop car
   const [selectedColor, setSelectedColor] = useState(
     car.selectedColor || 'white'
   );
   const [isFavorite, setIsFavorite] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  // Sincronización: Solo reseteamos si el coche cambia físicamente (cambio de ID)
   const [prevCarId, setPrevCarId] = useState(car.id);
   if (car.id !== prevCarId) {
     setPrevCarId(car.id);
     setSelectedColor(car.selectedColor || 'white');
   }
 
-  // EFECTO CLAVE: Cargar estado de favorito y su color guardado
   useEffect(() => {
     let isMounted = true;
 
@@ -56,15 +53,11 @@ export const CarCard = ({
         setIsFavorite(false);
         return;
       }
-
       try {
         const data = await favoriteService.getFavoriteDetail(user.uid, car.id);
         if (isMounted) {
           setIsFavorite(!!data);
-          // Si en Firebase hay un color guardado, este manda sobre la prop inicial
-          if (data?.selectedColor) {
-            setSelectedColor(data.selectedColor);
-          }
+          if (data?.selectedColor) setSelectedColor(data.selectedColor);
         }
       } catch (error) {
         console.error('Error checking favorite:', error);
@@ -77,21 +70,16 @@ export const CarCard = ({
     };
   }, [user?.uid, car.id]);
 
-  // 4. Sincronización automática: Si el usuario cambia el color y el coche
-  // ya es favorito, actualizamos la base de datos automáticamente.
   useEffect(() => {
     const syncColor = async () => {
-      // Solo disparamos la actualización si es favorito y tenemos usuario
       if (isFavorite && user?.uid) {
         try {
           await favoriteService.addFavorite(user.uid, car, selectedColor);
-          console.log(`Color ${selectedColor} actualizado en Firebase`);
         } catch (error) {
-          console.error('Error actualizando color en favorito:', error);
+          console.error('Error updating color in favorite:', error);
         }
       }
     };
-
     syncColor();
   }, [selectedColor, isFavorite, user?.uid, car]);
 
@@ -107,7 +95,7 @@ export const CarCard = ({
       }
     } catch (error) {
       setIsFavorite(!newFavoriteStatus);
-      console.error('Error al gestionar favorito:', error);
+      console.error('Error managing favorite:', error);
     }
   };
 
@@ -143,6 +131,7 @@ export const CarCard = ({
         <button
           onClick={handleFavoriteClick}
           className="absolute top-3 left-3 z-30 p-2 bg-white/90 backdrop-blur-sm rounded-full shadow-sm"
+          aria-label={isFavorite ? 'Remove from favorites' : 'Add to favorites'}
         >
           <Heart
             size={20}
@@ -152,7 +141,11 @@ export const CarCard = ({
           />
         </button>
 
-        <div onClick={() => setIsModalOpen(true)} className="cursor-pointer">
+        <div
+          data-testid="car-card-image"
+          onClick={() => setIsModalOpen(true)}
+          className="cursor-pointer"
+        >
           <CarImage car={car} selectedColor={selectedColor} />
         </div>
 
@@ -236,11 +229,13 @@ export const CarCard = ({
 
           <div className="mt-auto pt-2">
             <button
+              data-testid="compare-btn"
               onClick={() => onCompare(selectedColor)}
               disabled={isSelected}
+              aria-disabled={isSelected}
               className={`w-full py-3 rounded-xl font-bold transition-all ${
                 isSelected
-                  ? 'bg-slate-200 text-slate-400'
+                  ? 'bg-slate-200 text-slate-400 cursor-not-allowed'
                   : 'bg-blue-600 text-white active:scale-95 shadow-md shadow-blue-200'
               }`}
             >
@@ -249,6 +244,7 @@ export const CarCard = ({
           </div>
         </div>
       </div>
+
       <CarModal
         car={car}
         selectedColor={selectedColor}

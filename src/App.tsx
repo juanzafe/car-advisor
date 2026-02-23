@@ -106,12 +106,14 @@ export default function App() {
       <main className="max-w-7xl mx-auto p-6 space-y-8">
         <div className="flex justify-end gap-2 text-xs font-bold uppercase tracking-wider">
           <button
+            data-testid="lang-es"
             onClick={() => setLang('es')}
             className={`px-2 py-1 rounded ${lang === 'es' ? 'bg-blue-600 text-white' : 'bg-white text-slate-400 border border-slate-200'}`}
           >
             ES
           </button>
           <button
+            data-testid="lang-en"
             onClick={() => setLang('en')}
             className={`px-2 py-1 rounded ${lang === 'en' ? 'bg-blue-600 text-white' : 'bg-white text-slate-400 border border-slate-200'}`}
           >
@@ -160,7 +162,10 @@ export default function App() {
 
             <div ref={comparisonRef} className="scroll-mt-24">
               {selected.length > 0 && (
-                <section className="animate-in fade-in slide-in-from-top-4 duration-500">
+                <section
+                  data-testid="comparison-panel"
+                  className="animate-in fade-in slide-in-from-top-4 duration-500"
+                >
                   <div className="flex items-center justify-between mb-4 bg-white p-4 rounded-xl shadow-sm border border-slate-100">
                     <div className="flex items-center gap-2">
                       <div className="h-8 w-1 bg-blue-600 rounded-full"></div>
@@ -172,6 +177,7 @@ export default function App() {
                       </span>
                     </div>
                     <button
+                      data-testid="clear-comparison"
                       onClick={clearComparison}
                       className="flex items-center gap-2 text-red-500 hover:text-red-700 text-sm font-medium"
                     >

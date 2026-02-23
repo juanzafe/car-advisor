@@ -28,6 +28,7 @@ interface CarImageProps {
   selectedColor: string;
   showControls?: boolean;
   isAutoRotating?: boolean;
+  interactive?: boolean;
 }
 
 export const CarImage = ({
@@ -35,6 +36,7 @@ export const CarImage = ({
   selectedColor,
   showControls = true,
   isAutoRotating = false,
+  interactive = true,
 }: CarImageProps) => {
   const [state, dispatch] = useReducer(imageReducer, {
     angleIndex: 0,
@@ -63,6 +65,7 @@ export const CarImage = ({
   );
 
   const handleImageClick = () => {
+    if (!interactive) return;
     dispatch({
       type: 'SET_ANGLE_INDEX',
       payload: (angleIndex + 1) % carService.angles.length,
@@ -71,7 +74,9 @@ export const CarImage = ({
 
   return (
     <div
-      className="relative h-56 w-full flex items-center justify-center bg-transparent overflow-visible cursor-pointer"
+      className={`relative h-56 w-full flex items-center justify-center bg-transparent overflow-visible ${
+        interactive ? 'cursor-pointer' : 'pointer-events-none'
+      }`}
       onClick={handleImageClick}
     >
       <img
@@ -80,7 +85,7 @@ export const CarImage = ({
         className="h-44 w-full object-contain relative z-10 pointer-events-none"
       />
 
-      {showControls && (
+      {showControls && interactive && (
         <div className="absolute bottom-0 inset-x-0 flex justify-center z-40 pb-2">
           <div
             className="flex items-center gap-6 bg-white shadow-xl p-3 rounded-full border border-slate-300"

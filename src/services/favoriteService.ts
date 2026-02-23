@@ -65,17 +65,17 @@ export const favoriteService = {
 
     return querySnapshot.docs.map((doc) => {
       const data = doc.data();
-      const color = data.selectedColor || 'white'; // Recuperamos el color guardado
+      const color = data.selectedColor || 'white';
 
       return {
         ...(data as CarSpec),
-        selectedColor: color, // <--- MUY IMPORTANTE: Inyectarlo aquí para que CarCard lo vea
+        selectedColor: color,
         image: carService.getCarImage(
           data.brand,
           data.model,
           data.year,
           '01',
-          color // Usamos el color recuperado para la imagen
+          color
         ),
       };
     });

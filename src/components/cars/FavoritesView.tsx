@@ -12,7 +12,6 @@ export const FavoritesView = ({
   selectedIds,
   lang = 'es',
 }: {
-  // 1. Asegúrate de que la definición de la prop sea exacta
   onCompare: (car: CarSpec, color: string) => void;
   selectedIds: string[];
   lang: 'es' | 'en';
@@ -55,7 +54,6 @@ export const FavoritesView = ({
         <CarsGrid
           cars={favorites}
           isLoading={loading}
-          // 2. Aquí está la clave: pasamos la función que recibimos arriba
           onCompare={onCompare}
           selectedIds={selectedIds}
           lang={lang}

@@ -22,7 +22,9 @@ export const CarModal = ({
 
   if (!isOpen) return null;
 
-  const brandLogoUrl = `https://www.google.com/s2/favicons?sz=128&domain=${car.brand.toLowerCase().replace(/\s+/g, '')}.com`;
+  const brandLogoUrl = `https://www.google.com/s2/favicons?sz=128&domain=${car.brand
+    .toLowerCase()
+    .replace(/\s+/g, '')}.com`;
 
   const translateValue = (dict: Record<string, string>, value: string) => {
     if (!value) return value;
@@ -36,10 +38,18 @@ export const CarModal = ({
 
   return (
     <div
-      className="fixed inset-0 z-100 h-dvh w-screen flex flex-col items-center justify-center bg-[#121212] p-0 animate-in fade-in duration-300 overflow-hidden"
-      onClick={onClose}
+      data-testid="car-modal"
+      className="fixed inset-0 z-100 h-dvh w-screen flex flex-col items-center justify-center bg-[#121212] animate-in fade-in duration-300 overflow-hidden"
     >
-      <div className="absolute top-6 left-6 z-120 flex items-center gap-3 animate-in slide-in-from-left-10 duration-700">
+      {/* Backdrop — sits at z-0, receives clicks anywhere outside the content */}
+      <div
+        data-testid="car-modal-backdrop"
+        className="absolute inset-0 z-0"
+        onClick={onClose}
+      />
+
+      {/* Brand logo */}
+      <div className="absolute top-6 left-6 z-20 flex items-center gap-3 animate-in slide-in-from-left-10 duration-700">
         <div className="w-10 h-10 md:w-20 md:h-20 bg-white rounded-full flex items-center justify-center p-2 md:p-3 shadow-xl">
           <img
             src={brandLogoUrl}
@@ -47,31 +57,30 @@ export const CarModal = ({
             className="w-full h-full object-contain"
           />
         </div>
-        <div className="block">
-          <p className="text-white text-sm md:text-xl font-black uppercase italic leading-none">
-            {car.brand}
-          </p>
-        </div>
+        <p className="text-white text-sm md:text-xl font-black uppercase italic leading-none">
+          {car.brand}
+        </p>
       </div>
 
+      {/* Close button — z-20 so it's always above the car image */}
       <button
-        className="absolute top-6 right-6 text-white/50 hover:text-white z-120 bg-white/5 rounded-full p-2"
+        data-testid="car-modal-close"
+        className="absolute top-6 right-6 z-20 text-white/50 hover:text-white bg-white/5 rounded-full p-2"
         onClick={onClose}
         aria-label={t.closeDetails}
       >
         <X className="w-6 h-6 md:w-8 md:h-8" strokeWidth={1} />
       </button>
 
-      <div
-        className="relative w-full h-full flex items-center justify-center"
-        onClick={(e) => e.stopPropagation()}
-      >
+      {/* Car image — pointer-events-none so it never blocks the close button or backdrop */}
+      <div className="relative z-10 w-full h-full flex items-center justify-center pointer-events-none">
         <div className="w-full flex justify-center items-center px-4 transform scale-[1.5] md:scale-[2.5] lg:scale-[3.2] transition-transform duration-500">
           <CarImage
             car={car}
             selectedColor={selectedColor}
             showControls={false}
             isAutoRotating={false}
+            interactive={false}
           />
         </div>
 
@@ -79,7 +88,6 @@ export const CarModal = ({
           <h3 className="text-[#7a8170] text-4xl sm:text-7xl md:text-9xl font-black uppercase tracking-tighter italic leading-none text-center px-4 drop-shadow-2xl">
             {car.model}
           </h3>
-
           <div className="flex gap-4 mt-2 text-white/40 text-[10px] md:text-xs font-bold uppercase tracking-widest">
             <span>{car.year}</span>
             <span>•</span>
