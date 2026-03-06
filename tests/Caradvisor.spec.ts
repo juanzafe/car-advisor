@@ -2,6 +2,93 @@ import { test, expect, type Page } from '@playwright/test';
 
 const APP_URL = process.env.PLAYWRIGHT_TEST_BASE_URL || 'http://localhost:5173';
 
+const setupMocks = async (page: Page) => {
+  // Mock image assets that we might preload to not spam 404s
+  await page.route('**/*.{png,jpg,jpeg,webp}', (route) =>
+    route.fulfill({
+      status: 200,
+      contentType: 'image/png',
+      body: Buffer.from(
+        'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=',
+        'base64'
+      ),
+    })
+  );
+
+  // Mock API Ninjas (returns some fake cars)
+  await page.route('https://api.api-ninjas.com/v1/cars*', async (route) => {
+    const url = route.request().url();
+    const isToyota = url.toLowerCase().includes('toyota');
+    const isMercedes = url.toLowerCase().includes('mercedes');
+
+    let make = 'BMW';
+    if (isToyota) make = 'Toyota';
+    if (isMercedes) make = 'Mercedes-Benz';
+
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify([
+        {
+          make: make,
+          model: 'MockModel GTR',
+          year: 2024,
+          cylinders: 6,
+          drive: 'awd',
+          city_mpg: 18,
+          highway_mpg: 26,
+          combination_mpg: 22,
+          class: 'midsize car',
+          transmission: 'a',
+          fuel_type: 'gas',
+        },
+        {
+          make: make,
+          model: 'MockModel Eco',
+          year: 2024,
+          cylinders: 4,
+          drive: 'fwd',
+          city_mpg: 30,
+          highway_mpg: 40,
+          combination_mpg: 35,
+          class: 'compact car',
+          transmission: 'm',
+          fuel_type: 'gas',
+        },
+      ]),
+    });
+  });
+
+  // Mock VPIC (returns some models)
+  await page.route(
+    'https://vpic.nhtsa.dot.gov/api/vehicles/getmodelsformake/*',
+    async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({
+          Count: 2,
+          Message: 'Response returned successfully',
+          Results: [
+            {
+              Make_ID: 440,
+              Make_Name: 'MOCK',
+              Model_ID: 1703,
+              Model_Name: 'MockModel GTR',
+            },
+            {
+              Make_ID: 440,
+              Make_Name: 'MOCK',
+              Model_ID: 1704,
+              Model_Name: 'MockModel Eco',
+            },
+          ],
+        }),
+      });
+    }
+  );
+};
+
 const searchFor = async (page: Page, query: string) => {
   await page.fill('#car-search-input', query);
   await page.getByRole('button', { name: /^(buscar|search)$/i }).click();
@@ -24,6 +111,7 @@ const addCarToComparison = async (page: Page, nth = 0) => {
 
 test.describe('SearchBar', () => {
   test.beforeEach(async ({ page }) => {
+    await setupMocks(page);
     await page.goto(APP_URL);
   });
 
@@ -68,6 +156,7 @@ test.describe('SearchBar', () => {
 
 test.describe('PreferenceFilters', () => {
   test.beforeEach(async ({ page }) => {
+    await setupMocks(page);
     await page.goto(APP_URL);
   });
 
@@ -109,6 +198,7 @@ test.describe('PreferenceFilters', () => {
 
 test.describe('CarsGrid', () => {
   test.beforeEach(async ({ page }) => {
+    await setupMocks(page);
     await page.goto(APP_URL);
   });
 
@@ -150,6 +240,7 @@ test.describe('CarsGrid', () => {
 
 test.describe('CarCard interactions', () => {
   test.beforeEach(async ({ page }) => {
+    await setupMocks(page);
     await page.goto(APP_URL);
     await searchFor(page, 'mercedes');
     await waitForCards(page);
@@ -191,6 +282,7 @@ test.describe('CarCard interactions', () => {
 
 test.describe('CarModal', () => {
   test.beforeEach(async ({ page }) => {
+    await setupMocks(page);
     await page.goto(APP_URL);
     await searchFor(page, 'porsche');
     await waitForCards(page);
@@ -226,6 +318,7 @@ test.describe('CarModal', () => {
 
 test.describe('ComparisonGrid', () => {
   test.beforeEach(async ({ page }) => {
+    await setupMocks(page);
     await page.goto(APP_URL);
   });
 
@@ -274,6 +367,7 @@ test.describe('ComparisonGrid', () => {
 
 test.describe('Language switcher', () => {
   test.beforeEach(async ({ page }) => {
+    await setupMocks(page);
     await page.goto(APP_URL);
   });
 
@@ -298,6 +392,7 @@ test.describe('Language switcher', () => {
 
 test.describe('Privacy policy', () => {
   test.beforeEach(async ({ page }) => {
+    await setupMocks(page);
     await page.goto(APP_URL);
   });
 
@@ -322,6 +417,7 @@ test.describe('Privacy policy', () => {
 
 test.describe('Basic accessibility', () => {
   test.beforeEach(async ({ page }) => {
+    await setupMocks(page);
     await page.goto(APP_URL);
   });
 
