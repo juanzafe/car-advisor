@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { Info } from 'lucide-react';
 import {
   Zap,
   Fuel,
@@ -9,6 +10,7 @@ import {
   Move,
   Settings2,
   Droplets,
+  ChevronRight,
 } from 'lucide-react';
 import { CarImage } from './CarImage';
 import { CarModal } from './CarModal';
@@ -101,13 +103,13 @@ export const CarCard = ({
 
   const getColorHex = (color: string) => {
     const colors: Record<string, string> = {
-      white: '#FFFFFF',
+      white: '#F8FAFC',
       black: '#1A1A1A',
-      silver: '#E5E5E5',
+      silver: '#94A3B8',
       blue: '#2563EB',
       red: '#DC2626',
     };
-    return colors[color] || '#FFFFFF';
+    return colors[color] || '#F8FAFC';
   };
 
   const translateValue = (dict: Record<string, string>, value: string) => {
@@ -120,126 +122,222 @@ export const CarCard = ({
     return dict[key] || value;
   };
 
+  const stats = [
+    {
+      icon: <Zap size={12} />,
+      label: t.hp,
+      value: `${car.hp} ${lang === 'es' ? 'CV' : 'HP'}`,
+    },
+    {
+      icon: <Fuel size={12} />,
+      label: t.consumption,
+      value: car.consumption === 0 ? 'Eco' : `${car.consumption} L`,
+    },
+    {
+      icon: <Timer size={12} />,
+      label: t.acceleration,
+      value: `${car.acceleration}s`,
+    },
+    {
+      icon: <Gauge size={12} />,
+      label: t.topSpeed,
+      value: `${car.topSpeed} km/h`,
+    },
+    {
+      icon: <Droplets size={12} />,
+      label: t.engine,
+      value: translateValue(t.fuelTypes, car.fuelType),
+    },
+    {
+      icon: <Settings2 size={12} />,
+      label: t.transmission,
+      value: translateValue(t.transmissions, car.transmission),
+    },
+    { icon: <Move size={12} />, label: t.traction, value: car.traction },
+    { icon: <Weight size={12} />, label: t.weight, value: `${car.weight} kg` },
+  ];
+
   return (
     <>
       <div
         onMouseEnter={() =>
           carService.preloadFullCar(car.brand, car.model, car.year)
         }
-        className="bg-[#f1f5f9] rounded-2xl shadow-md overflow-hidden relative border border-slate-200 flex flex-col h-full transition-all hover:shadow-xl"
+        className="car-card rounded-2xl overflow-hidden relative flex flex-col h-full transition-all duration-300 group"
+        style={{
+          transition:
+            'transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease',
+        }}
       >
+        {/* Favorite button */}
         <button
           onClick={handleFavoriteClick}
-          className="absolute top-3 left-3 z-30 p-2 bg-white/90 backdrop-blur-sm rounded-full shadow-sm"
+          className="absolute top-3 left-3 z-30 p-2 rounded-full transition-all duration-200"
+          style={{
+            background: 'rgba(15,23,42,0.7)',
+            backdropFilter: 'blur(8px)',
+            border: '1px solid rgba(255,255,255,0.1)',
+          }}
           aria-label={isFavorite ? 'Remove from favorites' : 'Add to favorites'}
         >
           <Heart
-            size={20}
+            size={17}
             className={
               isFavorite ? 'fill-red-500 text-red-500' : 'text-slate-400'
             }
+            style={{ transition: 'all 0.2s' }}
           />
         </button>
 
+        {/* Score badge */}
+        {car.score !== undefined && (
+          <div
+            className="absolute top-3 right-3 z-30 px-2.5 py-1 rounded-full text-[11px] font-black"
+            style={{
+              background: 'rgba(37,99,235,0.2)',
+              border: '1px solid rgba(37,99,235,0.35)',
+              color: '#93c5fd',
+              backdropFilter: 'blur(8px)',
+            }}
+          >
+            ★ {Math.round(car.score)}
+          </div>
+        )}
+
+        {/* Car image — clickable */}
         <div
           data-testid="car-card-image"
           onClick={() => setIsModalOpen(true)}
-          className="cursor-pointer"
+          className="cursor-pointer relative overflow-hidden"
+          style={{
+            background:
+              'linear-gradient(180deg, rgba(30,41,59,0.6) 0%, rgba(15,23,42,0.9) 100%)',
+          }}
         >
           <CarImage car={car} selectedColor={selectedColor} />
+          {/* Hover overlay */}
+          <div
+            className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+            style={{ background: 'rgba(37,99,235,0.12)' }}
+          >
+            <span
+              className="flex items-center gap-1.5 text-white font-bold text-xs px-3 py-1.5 rounded-full"
+              style={{
+                background: 'rgba(37,99,235,0.6)',
+                backdropFilter: 'blur(8px)',
+              }}
+            >
+              Ver detalle <ChevronRight size={13} />
+            </span>
+          </div>
         </div>
 
+        {/* Card body */}
         <div className="p-5 flex flex-col flex-1 gap-4">
-          <div>
-            <h3 className="font-bold text-lg leading-tight uppercase text-slate-800 mb-3">
-              {car.brand} {car.model}
-            </h3>
-            <div className="flex gap-2">
+          {/* Title + color swatches */}
+          <div className="flex items-start justify-between gap-2">
+            <div>
+              <p className="text-[11px] font-black uppercase tracking-widest text-blue-400 mb-0.5">
+                {car.brand}
+              </p>
+              <h3 className="font-black text-lg leading-tight text-white">
+                {car.model}
+              </h3>
+              <p className="text-xs text-slate-500 mt-0.5">{car.year}</p>
+            </div>
+            <div className="flex gap-1.5 mt-1 flex-shrink-0">
               {carService.colorList.map((color) => (
                 <button
                   key={color}
                   onClick={() => setSelectedColor(color)}
-                  className={`w-6 h-6 rounded-full border-2 transition-all ${
-                    selectedColor === color
-                      ? 'border-blue-600 scale-110 shadow-sm'
-                      : 'border-white'
-                  }`}
-                  style={{ backgroundColor: getColorHex(color) }}
+                  className="rounded-full transition-all duration-200"
+                  style={{
+                    width: 18,
+                    height: 18,
+                    backgroundColor: getColorHex(color),
+                    border:
+                      selectedColor === color
+                        ? '2px solid #3b82f6'
+                        : '2px solid rgba(255,255,255,0.15)',
+                    transform:
+                      selectedColor === color ? 'scale(1.25)' : 'scale(1)',
+                    boxShadow:
+                      selectedColor === color
+                        ? '0 0 8px rgba(59,130,246,0.6)'
+                        : 'none',
+                  }}
                   title={color}
                 />
               ))}
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-x-4 gap-y-3 text-[12px] border-y border-slate-200/50 py-4">
-            <div className="flex justify-between items-center">
-              <span className="flex items-center gap-1.5 text-slate-500">
-                <Zap size={13} className="text-blue-600" /> {t.hp}
-              </span>
-              <span className="font-bold">{car.hp}</span>
-            </div>
-            <div className="flex justify-between items-center">
-              <span className="flex items-center gap-1.5 text-slate-500">
-                <Fuel size={13} className="text-blue-600" /> {t.consumption}
-              </span>
-              <span className="font-bold">{car.consumption}</span>
-            </div>
-            <div className="flex justify-between items-center">
-              <span className="flex items-center gap-1.5 text-slate-500">
-                <Timer size={13} className="text-blue-600" /> {t.acceleration}
-              </span>
-              <span className="font-bold">{car.acceleration}s</span>
-            </div>
-            <div className="flex justify-between items-center">
-              <span className="flex items-center gap-1.5 text-slate-500">
-                <Gauge size={13} className="text-blue-600" /> {t.topSpeed}
-              </span>
-              <span className="font-bold">{car.topSpeed}km/h</span>
-            </div>
-            <div className="flex justify-between items-center">
-              <span className="flex items-center gap-1.5 text-slate-500">
-                <Droplets size={13} className="text-blue-600" /> {t.engine}
-              </span>
-              <span className="font-bold uppercase">
-                {translateValue(t.fuelTypes, car.fuelType)}
-              </span>
-            </div>
-            <div className="flex justify-between items-center">
-              <span className="flex items-center gap-1.5 text-slate-500">
-                <Settings2 size={13} className="text-blue-600" />{' '}
-                {t.transmission}
-              </span>
-              <span className="font-bold uppercase">
-                {translateValue(t.transmissions, car.transmission)}
-              </span>
-            </div>
-            <div className="flex justify-between items-center">
-              <span className="flex items-center gap-1.5 text-slate-500">
-                <Move size={13} className="text-blue-600" /> {t.traction}
-              </span>
-              <span className="font-bold uppercase">{car.traction}</span>
-            </div>
-            <div className="flex justify-between items-center">
-              <span className="flex items-center gap-1.5 text-slate-500">
-                <Weight size={13} className="text-blue-600" /> {t.weight}
-              </span>
-              <span className="font-bold">{car.weight}kg</span>
-            </div>
+          {/* Specs grid */}
+          <div
+            className="grid grid-cols-2 gap-x-3 gap-y-2"
+            style={{
+              borderTop: '1px solid rgba(255,255,255,0.06)',
+              borderBottom: '1px solid rgba(255,255,255,0.06)',
+              paddingTop: 14,
+              paddingBottom: 14,
+            }}
+          >
+            {stats.map(({ icon, label, value }) => (
+              <div
+                key={label}
+                className="flex justify-between items-center text-[11px] px-2 py-1.5 rounded-lg"
+                style={{
+                  background: 'rgba(255,255,255,0.03)',
+                  border: '1px solid rgba(255,255,255,0.05)',
+                }}
+              >
+                <span className="flex items-center gap-1.5 text-slate-500">
+                  <span className="text-blue-500">{icon}</span>
+                  {label}
+                </span>
+                <span className="font-bold text-slate-200 uppercase text-[11px]">
+                  {value}
+                </span>
+              </div>
+            ))}
           </div>
 
-          <div className="mt-auto pt-2">
+          {/* Price + Compare button */}
+          <div className="mt-auto space-y-2.5">
+            {car.price > 0 ? (
+              <p className="text-lg font-black text-white text-center">
+                {new Intl.NumberFormat('es-ES', {
+                  style: 'currency',
+                  currency: 'EUR',
+                  maximumFractionDigits: 0,
+                }).format(car.price)}
+              </p>
+            ) : (
+              <p className="flex items-center justify-center gap-1.5 text-xs text-slate-500 text-center">
+                <Info size={12} className="text-slate-600" />
+                Precio no disponible
+              </p>
+            )}
             <button
               data-testid="compare-btn"
               onClick={() => onCompare(selectedColor)}
               disabled={isSelected}
               aria-disabled={isSelected}
-              className={`w-full py-3 rounded-xl font-bold transition-all ${
+              className={`w-full py-3 rounded-xl font-bold text-sm transition-all ${
                 isSelected
-                  ? 'bg-slate-200 text-slate-400 cursor-not-allowed'
-                  : 'bg-blue-600 text-white active:scale-95 shadow-md shadow-blue-200'
+                  ? 'cursor-not-allowed text-slate-500'
+                  : 'text-white btn-glow'
               }`}
+              style={
+                isSelected
+                  ? {
+                      background: 'rgba(255,255,255,0.05)',
+                      border: '1px solid rgba(255,255,255,0.08)',
+                    }
+                  : {}
+              }
             >
-              {isSelected ? t.inComparison : t.compareNow}
+              {isSelected ? `✓ ${t.inComparison}` : t.compareNow}
             </button>
           </div>
         </div>

@@ -18,11 +18,12 @@ import {
   PolarRadiusAxis,
   Radar,
   ResponsiveContainer,
+  Tooltip,
 } from 'recharts';
 import type { CarSpec } from '../../types/car';
 import { carService } from '../../services/carService';
 
-const COLORS = ['#2563eb', '#16a34a', '#dc2626', '#7c3aed'];
+const COLORS = ['#3b82f6', '#22c55e', '#ef4444', '#a855f7'];
 
 const SpecRow = ({
   icon,
@@ -35,11 +36,18 @@ const SpecRow = ({
   value: string | number;
   unit?: string;
 }) => (
-  <div className="flex justify-between items-center text-sm py-2 border-b border-slate-50 last:border-0">
+  <div
+    className="flex justify-between items-center text-sm py-2.5 px-3 rounded-lg"
+    style={{
+      background: 'rgba(255,255,255,0.03)',
+      border: '1px solid rgba(255,255,255,0.05)',
+      marginBottom: 4,
+    }}
+  >
     <span className="flex items-center gap-2 text-slate-500">
-      <span className="text-blue-500">{icon}</span> {label}
+      <span className="text-blue-400">{icon}</span> {label}
     </span>
-    <span className="font-bold text-slate-700">
+    <span className="font-bold text-slate-200">
       {value || '---'}
       {unit}
     </span>
@@ -68,11 +76,26 @@ export const ComparisonCard = ({
           currency: 'EUR',
           maximumFractionDigits: 0,
         }).format(car.price)
-      : 'Consultar';
+      : null;
 
   return (
-    <div className="bg-white rounded-2xl overflow-hidden shadow-lg border border-slate-200 flex flex-col h-full hover:shadow-2xl transition-all duration-300">
-      <div className="relative aspect-video bg-slate-100 flex items-center justify-center p-4">
+    <div
+      className="rounded-2xl overflow-hidden flex flex-col h-full transition-all duration-300"
+      style={{
+        background: 'rgba(30,41,59,0.8)',
+        border: '1px solid rgba(255,255,255,0.08)',
+        backdropFilter: 'blur(20px)',
+        boxShadow: '0 4px 30px rgba(0,0,0,0.3)',
+      }}
+    >
+      {/* Image */}
+      <div
+        className="relative aspect-video flex items-center justify-center p-4"
+        style={{
+          background:
+            'linear-gradient(135deg, rgba(15,23,42,0.8), rgba(30,41,59,0.6))',
+        }}
+      >
         <img
           src={carImageUrl}
           alt={car.model}
@@ -80,70 +103,88 @@ export const ComparisonCard = ({
         />
         <button
           onClick={() => onRemove(car.id)}
-          className="absolute top-3 right-3 bg-red-500 text-white p-2 rounded-full shadow-lg hover:bg-red-600 transition-colors z-10"
+          className="absolute top-2 right-2 p-1.5 rounded-full text-white transition-all hover:scale-110"
+          style={{
+            background: 'rgba(239,68,68,0.2)',
+            border: '1px solid rgba(239,68,68,0.3)',
+          }}
         >
-          <X size={18} strokeWidth={3} />
+          <X size={16} strokeWidth={2.5} className="text-red-400" />
         </button>
 
         {car.selectedColor && (
-          <div className="absolute bottom-2 left-3 flex items-center gap-1.5 bg-white/80 backdrop-blur-sm px-2 py-1 rounded-full border border-slate-200 shadow-sm">
+          <div
+            className="absolute bottom-2 left-3 flex items-center gap-1.5 px-2 py-1 rounded-full text-[10px] font-bold uppercase text-slate-400"
+            style={{
+              background: 'rgba(15,23,42,0.8)',
+              border: '1px solid rgba(255,255,255,0.1)',
+            }}
+          >
             <div
-              className="w-3 h-3 rounded-full border border-slate-300"
+              className="w-2.5 h-2.5 rounded-full border border-white/20"
               style={{
                 backgroundColor:
-                  car.selectedColor === 'white' ? '#FFFFFF' : car.selectedColor,
+                  car.selectedColor === 'white' ? '#F8FAFC' : car.selectedColor,
               }}
             />
-            <span className="text-[10px] font-bold uppercase text-slate-500">
-              {car.selectedColor}
-            </span>
+            {car.selectedColor}
           </div>
         )}
       </div>
 
-      <div className="p-6 flex flex-col grow">
+      {/* Info */}
+      <div className="p-5 flex flex-col grow">
         <div className="mb-4">
-          <p className="text-blue-600 font-black text-xs uppercase tracking-tighter mb-1">
+          <p className="text-blue-400 font-black text-xs uppercase tracking-widest mb-1">
             {car.brand}
           </p>
-          <h3 className="text-2xl font-black text-slate-900 leading-tight">
+          <h3 className="text-2xl font-black text-white leading-tight">
             {car.model}
           </h3>
         </div>
 
-        <div className="space-y-1 grow">
+        <div className="grow space-y-1">
           <SpecRow
-            icon={<Zap size={16} />}
+            icon={<Zap size={14} />}
             label="Potencia"
             value={car.hp}
             unit=" CV"
           />
           <SpecRow
-            icon={<Droplets size={16} />}
+            icon={<Droplets size={14} />}
             label="Consumo"
             value={car.consumption === 0 ? 'Eco' : car.consumption}
             unit={car.consumption === 0 ? '' : ' L/100'}
           />
           <SpecRow
-            icon={<Gauge size={16} />}
+            icon={<Gauge size={14} />}
             label="Peso"
             value={car.weight}
             unit=" kg"
           />
-          <SpecRow icon={<Calendar size={16} />} label="Año" value={car.year} />
+          <SpecRow icon={<Calendar size={14} />} label="Año" value={car.year} />
           <SpecRow
-            icon={<Star size={16} />}
+            icon={<Star size={14} />}
             label="Sport Score"
             value={car.sportScore}
             unit=" pts"
           />
         </div>
 
-        <div className="mt-6 pt-4 border-t-2 border-slate-100 flex items-center justify-between">
-          <span className="text-2xl font-black text-slate-900">
-            {formattedPrice}
-          </span>
-          <Wallet className="text-slate-300" size={24} />
+        <div
+          className="mt-5 pt-4 flex items-center justify-between"
+          style={{ borderTop: '1px solid rgba(255,255,255,0.07)' }}
+        >
+          {formattedPrice ? (
+            <span className="text-2xl font-black text-white">
+              {formattedPrice}
+            </span>
+          ) : (
+            <span className="text-xs text-slate-500 italic">
+              Precio no disponible
+            </span>
+          )}
+          <Wallet className="text-slate-600" size={20} />
         </div>
       </div>
     </div>
@@ -154,22 +195,35 @@ const WinnerCard = ({
   icon,
   label,
   car,
-  colorClass,
+  gradient,
 }: {
   icon: React.ReactNode;
   label: string;
   car: CarSpec;
-  colorClass: string;
+  gradient: string;
 }) => (
-  <div className="bg-white rounded-2xl p-4 flex items-center gap-4 shadow-md border border-slate-100 flex-1">
-    <div className={`${colorClass} p-3 rounded-xl text-white shadow-sm`}>
-      {icon}
+  <div
+    className="rounded-2xl p-4 flex items-center gap-3 flex-1"
+    style={{
+      background: 'rgba(255,255,255,0.04)',
+      border: '1px solid rgba(255,255,255,0.07)',
+      backdropFilter: 'blur(12px)',
+    }}
+  >
+    <div
+      className="p-2.5 rounded-xl flex-shrink-0"
+      style={{
+        background: gradient,
+        boxShadow: `0 4px 12px ${gradient.split(',')[0].replace('linear-gradient(135deg,', '').trim()}44`,
+      }}
+    >
+      <span className="text-white">{icon}</span>
     </div>
-    <div className="flex flex-col">
-      <span className="text-[11px] font-black uppercase tracking-wider text-slate-400 mb-0.5">
+    <div>
+      <span className="text-[10px] font-black uppercase tracking-widest text-slate-500 block mb-0.5">
         {label}
       </span>
-      <span className="text-sm font-black text-slate-800 leading-none">
+      <span className="text-sm font-black text-white leading-tight">
         {car.brand} {car.model}
       </span>
     </div>
@@ -187,59 +241,85 @@ export const ComparisonGrid = ({
   const winners = getComparisonWinners(cars);
 
   return (
-    <section className="bg-slate-100/50 p-4 md:p-8 rounded-4xl space-y-8 border border-slate-200">
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+    <section
+      className="rounded-3xl space-y-8 p-4 md:p-8"
+      style={{
+        background: 'rgba(255,255,255,0.02)',
+        border: '1px solid rgba(255,255,255,0.06)',
+        backdropFilter: 'blur(20px)',
+      }}
+    >
+      {/* Winner badges */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
         <WinnerCard
-          icon={<Trophy size={20} />}
+          icon={<Trophy size={18} />}
           label="El mejor"
           car={winners.overall}
-          colorClass="bg-amber-500"
+          gradient="linear-gradient(135deg, #f59e0b, #d97706)"
         />
         <WinnerCard
-          icon={<Leaf size={20} />}
+          icon={<Leaf size={18} />}
           label="Eficiencia"
           car={winners.eco}
-          colorClass="bg-green-500"
+          gradient="linear-gradient(135deg, #22c55e, #16a34a)"
         />
         <WinnerCard
-          icon={<Zap size={20} />}
+          icon={<Zap size={18} />}
           label="Deportivo"
           car={winners.sport}
-          colorClass="bg-red-500"
+          gradient="linear-gradient(135deg, #ef4444, #dc2626)"
         />
         <WinnerCard
-          icon={<Users size={20} />}
+          icon={<Users size={18} />}
           label="Familiar"
           car={winners.family}
-          colorClass="bg-blue-600"
+          gradient="linear-gradient(135deg, #3b82f6, #2563eb)"
         />
       </div>
 
-      <div className="bg-white rounded-3xl p-8 shadow-xl border border-slate-200 h-100">
+      {/* Radar chart */}
+      <div
+        className="rounded-2xl p-6"
+        style={{
+          background: 'rgba(255,255,255,0.03)',
+          border: '1px solid rgba(255,255,255,0.06)',
+          height: 320,
+        }}
+      >
         <ResponsiveContainer width="100%" height="100%">
           <RadarChart data={buildRadarData(cars)}>
-            <PolarGrid stroke="#cbd5e1" />
+            <PolarGrid stroke="rgba(255,255,255,0.08)" />
             <PolarAngleAxis
               dataKey="metric"
-              tick={{ fill: '#475569', fontSize: 14, fontWeight: '900' }}
+              tick={{ fill: '#64748b', fontSize: 13, fontWeight: 900 }}
             />
             <PolarRadiusAxis domain={[0, 100]} axisLine={false} tick={false} />
+            <Tooltip
+              contentStyle={{
+                background: 'rgba(15,23,42,0.95)',
+                border: '1px solid rgba(255,255,255,0.1)',
+                borderRadius: 12,
+                color: '#f1f5f9',
+                fontSize: 12,
+              }}
+            />
             {cars.map((car, index) => (
               <Radar
                 key={car.id}
-                name={car.model}
+                name={`${car.brand} ${car.model}`}
                 dataKey={car.id}
                 stroke={COLORS[index % COLORS.length]}
                 fill={COLORS[index % COLORS.length]}
-                fillOpacity={0.3}
-                strokeWidth={3}
+                fillOpacity={0.15}
+                strokeWidth={2.5}
               />
             ))}
           </RadarChart>
         </ResponsiveContainer>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+      {/* Car cards */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {cars.map((car) => (
           <ComparisonCard key={car.id} car={car} onRemove={onRemove} />
         ))}

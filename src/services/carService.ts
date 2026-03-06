@@ -28,48 +28,106 @@ const imageCache = new Map<string, string>();
 export const carService = {
   angles: ['01', '05', '09', '13', '17', '21', '25', '29'],
   colorList: ['white', 'black', 'silver', 'blue', 'red'],
-  motoBlacklist: [
-    'R1250',
-    'R1200',
-    'F850',
-    'F750',
-    'S1000',
-    'K1600',
-    'G310',
-    'CE 04',
-    'CBR',
-    'CBF',
-    'VFR',
-    'CRF',
-    'FORZA',
-    'PCX',
-    'SH125',
-    'AFRICA TWIN',
-    'GSX',
-    'V-STROM',
-    'HAYABUSA',
-    'BURGMAN',
-    'KATANA',
-    'NINJA',
-    'Z900',
-    'Z650',
-    'VERSYS',
-    'VULCAN',
-    'MT-07',
-    'MT-09',
-    'TMAX',
-    'XMAX',
-    'TENERE',
-    'YZF',
+
+  /** Brands that ONLY make motorcycles — never cars */
+  motoBrands: [
     'DUCATI',
     'TRIUMPH',
+    'HARLEY-DAVIDSON',
+    'HARLEY DAVIDSON',
     'HARLEY',
     'VESPA',
+    'PIAGGIO',
+    'APRILIA',
+    'MOTO GUZZI',
+    'INDIAN',
+    'ROYAL ENFIELD',
+    'KTM',
+    'HUSQVARNA',
+    'HUSABERG',
+    'BETA',
+    'GAS GAS',
+    'SHERCO',
+    'MV AGUSTA',
+    'MV-AGUSTA',
+    'BIMOTA',
+    'BENELLI',
+    'CAGIVA',
   ],
 
-  isMoto(model: string): boolean {
-    const m = model.toUpperCase();
-    return this.motoBlacklist.some((term) => m.includes(term));
+  /** Model name fragments that unambiguously mean motorcycle */
+  motoModelPatterns: [
+    // BMW Motorrad (spaced and unspaced)
+    /^R\s*\d{3,4}/,
+    /^K\s*\d{3,4}/,
+    /^F\s*\d{2,3}/,
+    /^G\s*\d{3}/,
+    /^S\s*1000/,
+    /^CE\s*0?4$/,
+    // Honda moto
+    /^CBR/,
+    /^CBF/,
+    /^CB\d/,
+    /^VFR/,
+    /^CRF/,
+    /^NC\d/,
+    /^NX\d/,
+    /^AFRICA\s*TWIN/,
+    /^FORZA/,
+    /^PCX/,
+    /^SH\s*\d/,
+    // Yamaha moto
+    /^MT-/,
+    /^YZF/,
+    /^TMAX/,
+    /^XMAX/,
+    /^NMAX/,
+    /^TENERE/,
+    /^TRACER/,
+    /^FAZER/,
+    /^R1$/,
+    /^R6$/,
+    /^R7$/,
+    // Kawasaki
+    /^NINJA/,
+    /^Z[679]\d\d/,
+    /^VERSYS/,
+    /^VULCAN/,
+    /^W\d{3}/,
+    /^ZX-/,
+    /^KLX/,
+    /^KLE/,
+    // Suzuki
+    /^GSX/,
+    /^GSR/,
+    /^V-STROM/,
+    /^VSTROM/,
+    /^HAYABUSA/,
+    /^BURGMAN/,
+    /^KATANA/,
+    /^BANDIT/,
+    /^INTRUDER/,
+    // KTM / Husqvarna
+    /^DUKE/,
+    /^EXC/,
+    /^SX-?F/,
+    /^SMC/,
+    // Generic patterns
+    /\bMOTORRAD\b/,
+  ],
+
+  isMoto(model: string, brand?: string): boolean {
+    const m = model.toUpperCase().trim();
+    const b = (brand || '').toUpperCase().trim();
+
+    // 1. Brand-level: the whole company only makes motos
+    if (this.motoBrands.some((mb) => b.includes(mb) || mb.includes(b)))
+      return true;
+
+    // 2. Model patterns via regex
+    if (this.motoModelPatterns.some((re) => re.test(m))) return true;
+
+    return false;
   },
 
   calculateSmartData(
@@ -183,7 +241,7 @@ export const carService = {
       if (resByModel.ok) ninjaData.push(...(await resByModel.json()));
 
       ninjaData.forEach((car, i) => {
-        if (this.isMoto(car.model)) return;
+        if (this.isMoto(car.model, car.make)) return;
         const spec = this.mapToCarSpec(car, i);
         const key = `${spec.brand}-${spec.model}`.toUpperCase();
         if (!uniqueMap.has(key)) uniqueMap.set(key, spec);
@@ -192,7 +250,7 @@ export const carService = {
       if (nhtsaRes.ok) {
         const nhtsaData: NHTSAResponse = await nhtsaRes.json();
         nhtsaData.Results.forEach((item, i) => {
-          if (this.isMoto(item.Model_Name)) return;
+          if (this.isMoto(item.Model_Name, item.Make_Name)) return;
           const key = `${item.Make_Name}-${item.Model_Name}`.toUpperCase();
           if (!uniqueMap.has(key))
             uniqueMap.set(
@@ -226,7 +284,7 @@ export const carService = {
       hp,
       consumption: consumption || 6.5,
       weight,
-      price: smartData.estimatedPrice,
+      price: 0, // No real EU price available from this source
       traction: (car.drive?.toLowerCase().includes('all') ||
       car.drive?.includes('4')
         ? 'AWD'
@@ -288,7 +346,7 @@ export const carService = {
       consumption: cons,
       acceleration: smartData.acceleration,
       weight,
-      price: smartData.estimatedPrice,
+      price: 0, // No real EU price available from this source
       topSpeed: smartData.topSpeed,
       fuelType: fuel,
       transmission: hp > 170 ? 'Auto' : 'Manual',

@@ -1,4 +1,4 @@
-import { Settings, Zap, Fuel, Wallet, Gauge } from 'lucide-react';
+import { Settings, Zap, Fuel, Wallet, Gauge, ChevronDown } from 'lucide-react';
 import type { Preferences } from '../../types/car';
 import { translations } from '../../locales/translations';
 
@@ -19,113 +19,180 @@ export const PreferenceFilters = ({
     setPreferences({ ...preferences, [key]: value });
   };
 
+  const sliders = [
+    {
+      id: 'min-power-range',
+      name: 'minPower' as keyof Preferences,
+      icon: <Zap size={15} className="text-yellow-400" />,
+      label: t.minPower,
+      min: 50,
+      max: 600,
+      step: 10,
+      value: preferences.minPower as number,
+      display: `${preferences.minPower} ${lang === 'es' ? 'CV' : 'HP'}`,
+      color: '#facc15',
+    },
+    {
+      id: 'max-consumption-range',
+      name: 'maxConsumption' as keyof Preferences,
+      icon: <Fuel size={15} className="text-green-400" />,
+      label: t.maxConsumption,
+      min: 3,
+      max: 20,
+      step: 0.5,
+      value: preferences.maxConsumption as number,
+      display: `${preferences.maxConsumption} L`,
+      color: '#4ade80',
+    },
+    {
+      id: 'max-price-range',
+      name: 'maxPrice' as keyof Preferences,
+      icon: <Wallet size={15} className="text-blue-400" />,
+      label: t.budget,
+      min: 10000,
+      max: 200000,
+      step: 5000,
+      value: preferences.maxPrice as number,
+      display: `${(preferences.maxPrice as number).toLocaleString()}${lang === 'es' ? '€' : '$'}`,
+      color: '#60a5fa',
+    },
+  ];
+
   return (
-    <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 space-y-6">
-      <div className="flex items-center gap-2 border-b border-slate-50 pb-4">
-        <Settings className="text-blue-600" size={20} />
-        <h2 className="text-xl font-bold text-slate-800">
-          {t.yourPreferences}
-        </h2>
+    <div
+      className="rounded-2xl overflow-hidden"
+      style={{
+        background: 'rgba(255,255,255,0.03)',
+        border: '1px solid rgba(255,255,255,0.07)',
+        backdropFilter: 'blur(20px)',
+      }}
+    >
+      {/* Header */}
+      <div
+        className="flex items-center gap-3 px-6 py-4"
+        style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}
+      >
+        <div
+          className="p-2 rounded-lg"
+          style={{
+            background: 'rgba(37,99,235,0.15)',
+            border: '1px solid rgba(37,99,235,0.25)',
+          }}
+        >
+          <Settings size={16} className="text-blue-400" />
+        </div>
+        <h2 className="text-base font-black text-white">{t.yourPreferences}</h2>
+        <span
+          className="ml-auto text-xs font-semibold px-2 py-0.5 rounded-full text-blue-300"
+          style={{
+            background: 'rgba(37,99,235,0.15)',
+            border: '1px solid rgba(37,99,235,0.2)',
+          }}
+        >
+          {lang === 'es' ? 'Activo' : 'Active'}
+        </span>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-        <div className="space-y-3">
-          <label
-            htmlFor="min-power-range"
-            className="flex justify-between items-center text-sm font-medium cursor-pointer"
-          >
-            <span className="flex items-center gap-2 text-slate-500">
-              <Zap size={16} /> {t.minPower}
-            </span>
-            <span className="text-blue-600 font-bold">
-              {preferences.minPower} {lang === 'es' ? 'CV' : 'HP'}
-            </span>
-          </label>
-          <input
-            type="range"
-            id="min-power-range"
-            name="minPower"
-            min="50"
-            max="600"
-            step="10"
-            value={preferences.minPower}
-            onChange={(e) => handleChange('minPower', Number(e.target.value))}
-            className="w-full h-1.5 bg-slate-100 rounded-lg appearance-none cursor-pointer accent-blue-600"
-          />
-        </div>
+      {/* Content */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 p-6">
+        {sliders.map(
+          ({
+            id,
+            name,
+            icon,
+            label,
+            min,
+            max,
+            step,
+            value,
+            display,
+            color,
+          }) => (
+            <div key={id} className="space-y-4">
+              <div className="flex justify-between items-center">
+                <label
+                  htmlFor={id}
+                  className="flex items-center gap-2 text-sm font-semibold text-slate-400 cursor-pointer"
+                >
+                  {icon} {label}
+                </label>
+                <span
+                  className="text-sm font-black tabular-nums px-2 py-0.5 rounded-lg"
+                  style={{
+                    color,
+                    background: `${color}18`,
+                    border: `1px solid ${color}30`,
+                  }}
+                >
+                  {display}
+                </span>
+              </div>
+              <div className="relative">
+                {/* Track fill overlay */}
+                <div
+                  className="absolute top-1/2 left-0 -translate-y-1/2 h-1 rounded-full pointer-events-none"
+                  style={{
+                    width: `${((value - min) / (max - min)) * 100}%`,
+                    background: `linear-gradient(90deg, ${color}80, ${color})`,
+                  }}
+                />
+                <input
+                  type="range"
+                  id={id}
+                  name={name}
+                  min={min}
+                  max={max}
+                  step={step}
+                  value={value}
+                  onChange={(e) => handleChange(name, Number(e.target.value))}
+                  className="w-full relative z-10"
+                  style={{ accentColor: color }}
+                />
+              </div>
+            </div>
+          )
+        )}
 
-        <div className="space-y-3">
-          <label
-            htmlFor="max-consumption-range"
-            className="flex justify-between items-center text-sm font-medium cursor-pointer"
-          >
-            <span className="flex items-center gap-2 text-slate-500">
-              <Fuel size={16} /> {t.maxConsumption}
-            </span>
-            <span className="text-blue-600 font-bold">
-              {preferences.maxConsumption} L
-            </span>
-          </label>
-          <input
-            type="range"
-            id="max-consumption-range"
-            name="maxConsumption"
-            min="3"
-            max="20"
-            step="0.5"
-            value={preferences.maxConsumption}
-            onChange={(e) =>
-              handleChange('maxConsumption', Number(e.target.value))
-            }
-            className="w-full h-1.5 bg-slate-100 rounded-lg appearance-none cursor-pointer accent-blue-600"
-          />
-        </div>
-
-        <div className="space-y-3">
-          <label
-            htmlFor="max-price-range"
-            className="flex justify-between items-center text-sm font-medium cursor-pointer"
-          >
-            <span className="flex items-center gap-2 text-slate-500">
-              <Wallet size={16} /> {t.budget}
-            </span>
-            <span className="text-blue-600 font-bold">
-              {preferences.maxPrice.toLocaleString()}
-              {lang === 'es' ? '€' : '$'}
-            </span>
-          </label>
-          <input
-            type="range"
-            id="max-price-range"
-            name="maxPrice"
-            min="10000"
-            max="200000"
-            step="5000"
-            value={preferences.maxPrice}
-            onChange={(e) => handleChange('maxPrice', Number(e.target.value))}
-            className="w-full h-1.5 bg-slate-100 rounded-lg appearance-none cursor-pointer accent-blue-600"
-          />
-        </div>
-
-        <div className="space-y-3">
+        {/* Traction select */}
+        <div className="space-y-4">
           <label
             htmlFor="traction-select"
-            className="flex items-center gap-2 text-sm font-medium text-slate-500 mb-1 cursor-pointer"
+            className="flex items-center gap-2 text-sm font-semibold text-slate-400 cursor-pointer"
           >
-            <Gauge size={16} /> {t.idealTraction}
+            <Gauge size={15} className="text-purple-400" /> {t.idealTraction}
           </label>
-          <select
-            id="traction-select"
-            name="preferredTraction"
-            value={preferences.preferredTraction}
-            onChange={(e) => handleChange('preferredTraction', e.target.value)}
-            className="w-full p-2 bg-slate-50 border border-slate-200 rounded-xl text-sm font-semibold text-slate-700 outline-none focus:border-blue-500 transition-colors"
-          >
-            <option value="any">{t.any}</option>
-            <option value="FWD">{t.front} (FWD)</option>
-            <option value="RWD">{t.rear} (RWD)</option>
-            <option value="AWD">{t.allWheel} (AWD)</option>
-          </select>
+          <div className="relative">
+            <select
+              id="traction-select"
+              name="preferredTraction"
+              value={preferences.preferredTraction}
+              onChange={(e) =>
+                handleChange('preferredTraction', e.target.value)
+              }
+              className="w-full py-2 pl-3 pr-8 rounded-xl text-sm font-bold text-white outline-none appearance-none cursor-pointer transition-all"
+              style={{
+                background: 'rgba(255,255,255,0.06)',
+                border: '1px solid rgba(255,255,255,0.1)',
+              }}
+            >
+              <option value="any" style={{ background: '#1e293b' }}>
+                {t.any}
+              </option>
+              <option value="FWD" style={{ background: '#1e293b' }}>
+                {t.front} (FWD)
+              </option>
+              <option value="RWD" style={{ background: '#1e293b' }}>
+                {t.rear} (RWD)
+              </option>
+              <option value="AWD" style={{ background: '#1e293b' }}>
+                {t.allWheel} (AWD)
+              </option>
+            </select>
+            <ChevronDown
+              size={14}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 pointer-events-none"
+            />
+          </div>
         </div>
       </div>
     </div>
