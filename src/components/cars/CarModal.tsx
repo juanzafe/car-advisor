@@ -9,6 +9,7 @@ interface CarModalProps {
   isOpen: boolean;
   onClose: () => void;
   lang?: 'es' | 'en';
+  initialAngleIndex?: number;
 }
 
 export const CarModal = ({
@@ -17,6 +18,7 @@ export const CarModal = ({
   isOpen,
   onClose,
   lang = 'es',
+  initialAngleIndex = 0,
 }: CarModalProps) => {
   const t = translations[lang];
 
@@ -81,6 +83,8 @@ export const CarModal = ({
             showControls={false}
             isAutoRotating={false}
             interactive={false}
+            isFull={true}
+            initialAngleIndex={initialAngleIndex}
           />
         </div>
 
