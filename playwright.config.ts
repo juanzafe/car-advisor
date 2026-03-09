@@ -4,8 +4,8 @@ export default defineConfig({
   testDir: './tests',
   timeout: 60000,
   fullyParallel: true,
-  workers: process.env.CI ? 1 : undefined,
-  retries: 1,
+  workers: 4,
+  retries: process.env.CI ? 2 : 0,
   webServer: {
     command: 'npm run dev',
     url: 'http://localhost:5173',
