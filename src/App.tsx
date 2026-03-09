@@ -146,7 +146,7 @@ export default function App() {
                         </span>
                       </div>
                       <h2 className="text-4xl md:text-5xl font-black tracking-tight gradient-text leading-tight">
-                        {`${lang === 'es' ? 'Hola' : 'Hello'}, ${user.displayName?.split(' ')[0]} 👋`}
+                        {`${lang === 'es' ? 'Hola' : 'Hello'}, ${user.displayName?.split(' ')[0]}`}
                       </h2>
                     </>
                   ) : (
