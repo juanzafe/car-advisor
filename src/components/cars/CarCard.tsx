@@ -40,6 +40,7 @@ export const CarCard = ({
   );
   const [isFavorite, setIsFavorite] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [currentAngleIndex, setCurrentAngleIndex] = useState(0);
 
   const [prevCarId, setPrevCarId] = useState(car.id);
   if (car.id !== prevCarId) {
@@ -160,9 +161,6 @@ export const CarCard = ({
   return (
     <>
       <div
-        onMouseEnter={() =>
-          carService.preloadFullCar(car.brand, car.model, car.year)
-        }
         className="car-card rounded-2xl overflow-hidden relative flex flex-col h-full transition-all duration-300 group"
         style={{
           transition:
@@ -207,6 +205,20 @@ export const CarCard = ({
         {/* Car image — clickable */}
         <div
           data-testid="car-card-image"
+          onMouseEnter={() => {
+            // Only preload 360 angles if they hover the image specifically
+            carService.angles.forEach((angle) => {
+              const img = new Image();
+              img.src = carService.getCarImage(
+                car.brand,
+                car.model,
+                car.year,
+                angle,
+                'white',
+                true
+              );
+            });
+          }}
           onClick={() => setIsModalOpen(true)}
           className="cursor-pointer relative overflow-hidden"
           style={{
@@ -214,7 +226,11 @@ export const CarCard = ({
               'linear-gradient(180deg, rgba(30,41,59,0.6) 0%, rgba(15,23,42,0.9) 100%)',
           }}
         >
-          <CarImage car={car} selectedColor={selectedColor} />
+          <CarImage
+            car={car}
+            selectedColor={selectedColor}
+            onAngleChange={setCurrentAngleIndex}
+          />
           {/* Hover overlay */}
           <div
             className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300"
@@ -235,7 +251,12 @@ export const CarCard = ({
         {/* Card body */}
         <div className="p-5 flex flex-col flex-1 gap-4">
           {/* Title + color swatches */}
-          <div className="flex items-start justify-between gap-2">
+          <div
+            className="flex items-start justify-between gap-2"
+            onMouseEnter={() =>
+              carService.preloadColors(car.brand, car.model, car.year)
+            }
+          >
             <div>
               <p className="text-[11px] font-black uppercase tracking-widest text-blue-400 mb-0.5">
                 {car.brand}
@@ -349,6 +370,7 @@ export const CarCard = ({
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         lang={lang}
+        initialAngleIndex={currentAngleIndex}
       />
     </>
   );
