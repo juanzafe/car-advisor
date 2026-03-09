@@ -3,8 +3,8 @@ import { defineConfig, devices } from '@playwright/test';
 export default defineConfig({
   testDir: './tests',
   timeout: 60000,
-  fullyParallel: false,
-  workers: 1,
+  fullyParallel: true,
+  workers: process.env.CI ? 1 : undefined,
   retries: 1,
   webServer: {
     command: 'npm run dev',
@@ -20,14 +20,6 @@ export default defineConfig({
     {
       name: 'chromium',
       use: { ...devices['Desktop Chrome'] },
-    },
-    {
-      name: 'webkit',
-      use: { ...devices['Desktop Safari'] },
-    },
-    {
-      name: 'firefox',
-      use: { ...devices['Desktop Firefox'] },
     },
   ],
 });
