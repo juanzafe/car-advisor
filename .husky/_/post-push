@@ -1,4 +1,5 @@
 #!/bin/sh
+echo "=== POST-PUSH HOOK TEST ==="
 echo "Building..."
 npm run build
 
