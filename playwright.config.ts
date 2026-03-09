@@ -5,15 +5,15 @@ export default defineConfig({
   timeout: 60000,
   fullyParallel: true,
   workers: 4,
-  retries: process.env.CI ? 2 : 0,
+  retries: 0,
   webServer: {
-    command: 'npm run dev',
-    url: 'http://localhost:5173',
+    command: 'npm run build && npm run preview',
+    url: 'http://localhost:4173',
     reuseExistingServer: true,
-    timeout: 30000,
+    timeout: 60000,
   },
   use: {
-    baseURL: 'http://localhost:5173',
+    baseURL: 'http://localhost:4173',
     trace: 'on-first-retry',
   },
   projects: [
