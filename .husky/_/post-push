@@ -1,0 +1,6 @@
+#!/bin/sh
+echo "Building..."
+npm run build
+
+echo "Deploying to Firebase..."
+firebase deploy
