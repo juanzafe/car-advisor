@@ -18,11 +18,22 @@ jobs:
         run: npm ci
       - name: Install Playwright Browsers
         run: npx playwright install --with-deps
-      - name: Start server
-        run: npm run dev &
+      - name: Build app
+        run: npm run build
+      - name: Start preview server
+        run: npm run preview > /dev/null 2>&1 &
         shell: bash
       - name: Wait for server
-        run: sleep 10 && curl -s http://localhost:5173 > /dev/null || exit 1
+        run: |
+          for i in {1..30}; do
+            if curl -s http://localhost:4173 > /dev/null 2>&1; then
+              echo "Server ready"
+              exit 0
+            fi
+            sleep 2
+          done
+          echo "Server failed to start"
+          exit 1
       - name: Run Playwright tests
         run: npx playwright test --project=chromium
       - uses: actions/upload-artifact@v4
