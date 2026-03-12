@@ -140,9 +140,11 @@ test.describe('SearchBar', () => {
   test('loading skeleton appears while searching', async ({ page }) => {
     await page.fill('#car-search-input', 'bmw');
     await page.getByRole('button', { name: /^(buscar|search)$/i }).click();
-    await expect(page.locator('[class*="animate-pulse"]').first()).toBeVisible({
-      timeout: 3000,
-    });
+    await expect(page.locator('[class*="skeleton-pulse"]').first()).toBeVisible(
+      {
+        timeout: 3000,
+      }
+    );
   });
 
   test('results appear after a valid search', async ({ page }) => {
