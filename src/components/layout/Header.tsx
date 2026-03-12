@@ -46,9 +46,9 @@ export const Header = ({ view, setView, lang = 'es' }: HeaderProps) => {
               strokeWidth={2.5}
             />
           </div>
-          <h1 className="text-xl md:text-2xl font-black tracking-tighter uppercase hidden sm:block">
+          <h1 className="text-xl md:text-2xl font-black tracking-tighter uppercase hidden sm:block leading-none">
             <span
-              className="italic"
+              className="italic inline-block"
               style={{
                 background: 'linear-gradient(90deg, #3b82f6, #2563eb)',
                 WebkitBackgroundClip: 'text',
@@ -59,6 +59,7 @@ export const Header = ({ view, setView, lang = 'es' }: HeaderProps) => {
               Car-Advisor
             </span>
             <span
+              className="inline-block"
               style={{
                 background: 'linear-gradient(90deg, #3b82f6, #818cf8)',
                 WebkitBackgroundClip: 'text',
