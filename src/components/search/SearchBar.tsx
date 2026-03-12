@@ -35,7 +35,7 @@ export function SearchBar({
         className={`search-container flex items-center gap-3 rounded-2xl px-5 py-4 ${isFocused ? 'ring-0' : ''}`}
       >
         <Search
-          className={`flex-shrink-0 transition-colors ${isFocused ? 'text-blue-400' : 'text-slate-500'}`}
+          className={`flex-shrink-0 transition-colors ${isFocused ? 'text-blue-400' : 'text-slate-600'}`}
           size={22}
         />
 
@@ -54,7 +54,7 @@ export function SearchBar({
           onBlur={() => setIsFocused(false)}
           disabled={isLoading}
           autoComplete="off"
-          className="flex-1 outline-none text-white placeholder-slate-500 disabled:opacity-50 text-base bg-transparent"
+          className="flex-1 outline-none text-slate-900 placeholder-slate-500 disabled:opacity-50 text-base bg-transparent"
         />
 
         <button
@@ -62,7 +62,7 @@ export function SearchBar({
           disabled={isLoading || !query.trim()}
           className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-white font-bold text-sm transition-all flex-shrink-0 ${
             isLoading || !query.trim()
-              ? 'opacity-40 cursor-not-allowed bg-slate-700'
+              ? 'opacity-40 cursor-not-allowed bg-gray-200'
               : 'btn-glow'
           }`}
         >
@@ -90,10 +90,10 @@ export function SearchBar({
               setQuery(s);
               onSearch(s);
             }}
-            className="text-xs px-3 py-1.5 rounded-full text-slate-400 hover:text-blue-300 transition-all hover:border-blue-500/40"
+            className="text-xs px-3 py-1.5 rounded-full text-slate-700 hover:text-blue-300 transition-all hover:border-blue-500/40"
             style={{
-              background: 'rgba(255,255,255,0.04)',
-              border: '1px solid rgba(255,255,255,0.08)',
+              background: '#f1f5f9',
+              border: '1px solid rgba(0,0,0,0.08)',
             }}
           >
             {s}

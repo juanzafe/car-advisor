@@ -18,11 +18,11 @@ export const Header = ({ view, setView, lang = 'es' }: HeaderProps) => {
     <header
       className="sticky top-0 z-50"
       style={{
-        background: 'rgba(15, 23, 42, 0.85)',
+        background: 'rgba(255, 255, 255, 0.95)',
         backdropFilter: 'blur(24px)',
         WebkitBackdropFilter: 'blur(24px)',
-        borderBottom: '1px solid rgba(255,255,255,0.07)',
-        boxShadow: '0 4px 30px rgba(0,0,0,0.3)',
+        borderBottom: '1px solid rgba(0,0,0,0.08)',
+        boxShadow: '0 4px 30px rgba(0,0,0,0.08)',
       }}
     >
       <div
@@ -50,7 +50,7 @@ export const Header = ({ view, setView, lang = 'es' }: HeaderProps) => {
             <span
               className="italic"
               style={{
-                background: 'linear-gradient(90deg, #f8fafc, #93c5fd)',
+                background: 'linear-gradient(90deg, #3b82f6, #2563eb)',
                 WebkitBackgroundClip: 'text',
                 WebkitTextFillColor: 'transparent',
                 backgroundClip: 'text',
@@ -75,8 +75,8 @@ export const Header = ({ view, setView, lang = 'es' }: HeaderProps) => {
         <nav
           className="flex items-center gap-1 p-1 rounded-xl"
           style={{
-            background: 'rgba(255,255,255,0.05)',
-            border: '1px solid rgba(255,255,255,0.08)',
+            background: 'rgba(0,0,0,0.03)',
+            border: '1px solid rgba(0,0,0,0.08)',
           }}
         >
           {[
@@ -98,15 +98,15 @@ export const Header = ({ view, setView, lang = 'es' }: HeaderProps) => {
               className={`flex items-center gap-2 px-3 md:px-4 py-2 rounded-lg text-sm font-bold transition-all ${
                 view === key
                   ? key === 'favorites'
-                    ? 'text-red-400'
-                    : 'text-blue-400'
-                  : 'text-slate-500 hover:text-slate-300'
+                    ? 'text-red-500'
+                    : 'text-blue-600'
+                  : 'text-slate-600 hover:text-slate-800'
               }`}
               style={
                 view === key
                   ? {
-                      background: 'rgba(255,255,255,0.08)',
-                      boxShadow: '0 2px 8px rgba(0,0,0,0.2)',
+                      background: 'rgba(59,130,246,0.1)',
+                      boxShadow: '0 2px 8px rgba(59,130,246,0.1)',
                     }
                   : {}
               }
@@ -123,19 +123,19 @@ export const Header = ({ view, setView, lang = 'es' }: HeaderProps) => {
             <div className="flex items-center gap-2 md:gap-3">
               <button
                 onClick={() => signOut(auth)}
-                className="md:hidden p-2 text-slate-500 hover:text-red-400 transition-colors"
+                className="md:hidden p-2 text-slate-600 hover:text-red-500 transition-colors"
                 aria-label={t.logout}
               >
                 <LogOut size={20} />
               </button>
 
               <div className="hidden md:block text-right">
-                <p className="text-sm font-black text-slate-200 leading-none">
+                <p className="text-sm font-black text-slate-800 leading-none">
                   {user.displayName?.split(' ')[0]}
                 </p>
                 <button
                   onClick={() => signOut(auth)}
-                  className="text-xs uppercase text-slate-500 hover:text-red-400 font-bold cursor-pointer transition-colors tracking-wider"
+                  className="text-xs uppercase text-slate-600 hover:text-red-500 font-bold cursor-pointer transition-colors tracking-wider"
                 >
                   {t.logout}
                 </button>
