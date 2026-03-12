@@ -164,8 +164,8 @@ export default function App() {
                 <SearchBar onSearch={search} isLoading={loading} lang={lang} />
 
                 {!user && cars.length > 0 && (
-                  <div className="glass-card rounded-2xl p-4 flex justify-between items-center border border-blue-500/20">
-                    <p className="font-medium flex items-center gap-2 text-slate-300">
+                  <div className="glass-card rounded-2xl p-4 flex justify-between items-center border border-blue-300/40">
+                    <p className="font-medium flex items-center gap-2 text-slate-700">
                       <Star
                         size={18}
                         className="text-yellow-400 fill-yellow-400"
@@ -198,17 +198,17 @@ export default function App() {
                   <div className="flex items-center justify-between mb-4 glass-card p-4 rounded-xl">
                     <div className="flex items-center gap-3">
                       <div className="h-8 w-1 bg-gradient-to-b from-blue-400 to-indigo-600 rounded-full" />
-                      <h3 className="text-xl font-bold text-white">
+                      <h3 className="text-xl font-bold text-slate-900">
                         {t.comparison}
                       </h3>
-                      <span className="bg-blue-500/20 text-blue-300 border border-blue-500/30 px-2 py-0.5 rounded-full text-xs font-bold">
+                      <span className="bg-blue-100 text-blue-700 border border-blue-300 px-2 py-0.5 rounded-full text-xs font-bold">
                         {selected.length}
                       </span>
                     </div>
                     <button
                       data-testid="clear-comparison"
                       onClick={clearComparison}
-                      className="flex items-center gap-2 text-red-400 hover:text-red-300 text-sm font-medium transition-colors"
+                      className="flex items-center gap-2 text-red-500 hover:text-red-600 text-sm font-medium transition-colors"
                     >
                       <Trash2 size={16} /> {t.clearAll}
                     </button>

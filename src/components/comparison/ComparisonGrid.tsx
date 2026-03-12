@@ -103,13 +103,13 @@ export const ComparisonCard = ({
         />
         <button
           onClick={() => onRemove(car.id)}
-          className="absolute top-2 right-2 p-1.5 rounded-full text-white transition-all hover:scale-110"
+          className="absolute top-2 right-2 p-1.5 rounded-full transition-all hover:scale-110"
           style={{
-            background: 'rgba(239,68,68,0.2)',
-            border: '1px solid rgba(239,68,68,0.3)',
+            background: 'rgba(220,38,38,0.15)',
+            border: '1px solid rgba(220,38,38,0.3)',
           }}
         >
-          <X size={16} strokeWidth={2.5} className="text-red-400" />
+          <X size={16} strokeWidth={2.5} className="text-red-500" />
         </button>
 
         {car.selectedColor && (
