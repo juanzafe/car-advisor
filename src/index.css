@@ -2,11 +2,18 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
 
 :root {
-  --brand-primary: #2563eb;
-  --brand-secondary: #1e40af;
+  --brand-primary: #3b82f6;
+  --brand-secondary: #1e3a8a;
   --brand-accent: #60a5fa;
-  --surface-glass: rgba(255, 255, 255, 0.08);
-  --border-glass: rgba(255, 255, 255, 0.15);
+  --surface-raised: rgba(30, 41, 59, 0.8);
+  --surface-sunken: rgba(15, 23, 42, 0.6);
+  --border-subtle: rgba(255, 255, 255, 0.08);
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.5);
+  --shadow-inset:
+    inset 0 2px 4px rgba(255, 255, 255, 0.05),
+    inset 0 -2px 4px rgba(0, 0, 0, 0.3);
 }
 
 * {
@@ -47,64 +54,75 @@ p {
   padding: 0;
 }
 
-/* --- Hero gradient background --- */
+/* --- Hero gradient background - Subtle and modern --- */
 .hero-bg {
   background:
     radial-gradient(
       ellipse 80% 60% at 50% -10%,
-      rgba(37, 99, 235, 0.35) 0%,
+      rgba(59, 130, 246, 0.12) 0%,
       transparent 70%
     ),
     radial-gradient(
       ellipse 60% 40% at 85% 20%,
-      rgba(99, 102, 241, 0.2) 0%,
+      rgba(79, 70, 229, 0.06) 0%,
       transparent 60%
     ),
     linear-gradient(180deg, #0f172a 0%, #111827 100%);
 }
 
-/* --- Glassmorphism card --- */
+/* --- Neumorphic card - Soft shadows --- */
 .glass-card {
-  background: rgba(255, 255, 255, 0.04);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: linear-gradient(
+    145deg,
+    rgba(30, 41, 59, 0.5),
+    rgba(20, 29, 48, 0.5)
+  );
+  border: 1px solid rgba(255, 255, 255, 0.05);
   box-shadow:
-    0 4px 24px rgba(0, 0, 0, 0.3),
-    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+    var(--shadow-md),
+    inset 0 1px 2px rgba(255, 255, 255, 0.03);
+  border-radius: 16px;
 }
 
 .glass-card-hover {
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .glass-card-hover:hover {
-  background: rgba(255, 255, 255, 0.07);
-  border-color: rgba(37, 99, 235, 0.4);
+  background: linear-gradient(
+    145deg,
+    rgba(37, 99, 235, 0.1),
+    rgba(30, 41, 59, 0.5)
+  );
   box-shadow:
-    0 8px 40px rgba(37, 99, 235, 0.2),
-    0 0 0 1px rgba(37, 99, 235, 0.15),
-    inset 0 1px 0 rgba(255, 255, 255, 0.1);
-  transform: translateY(-4px);
+    0 6px 24px rgba(59, 130, 246, 0.15),
+    inset 0 1px 2px rgba(255, 255, 255, 0.05);
+  transform: translateY(-2px);
 }
 
-/* --- Car card specific --- */
+/* --- Car card specific - Neumorphic design --- */
 .car-card {
   background: linear-gradient(
     145deg,
-    rgba(30, 41, 59, 0.9) 0%,
-    rgba(15, 23, 42, 0.95) 100%
+    rgba(30, 41, 59, 0.4),
+    rgba(20, 29, 48, 0.4)
   );
-  border: 1px solid rgba(255, 255, 255, 0.07);
-  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 20px;
+  box-shadow: var(--shadow-md);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .car-card:hover {
-  border-color: rgba(37, 99, 235, 0.5);
+  background: linear-gradient(
+    145deg,
+    rgba(37, 99, 235, 0.12),
+    rgba(30, 41, 59, 0.4)
+  );
   box-shadow:
-    0 12px 48px rgba(37, 99, 235, 0.25),
-    0 0 0 1px rgba(37, 99, 235, 0.2);
-  transform: translateY(-6px);
+    0 8px 32px rgba(59, 130, 246, 0.18),
+    inset 0 1px 2px rgba(255, 255, 255, 0.05);
+  transform: translateY(-4px);
 }
 
 /* --- Gradient text --- */
@@ -122,110 +140,147 @@ p {
   background-clip: text;
 }
 
-/* --- Glowing button --- */
+/* --- Neumorphic button --- */
 .btn-glow {
-  background: linear-gradient(135deg, #2563eb, #4f46e5);
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
   box-shadow:
-    0 4px 15px rgba(37, 99, 235, 0.5),
-    0 0 0 0 rgba(37, 99, 235, 0);
-  transition: all 0.3s ease;
+    0 4px 12px rgba(59, 130, 246, 0.35),
+    inset 0 1px 2px rgba(255, 255, 255, 0.2);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  border-radius: 12px;
 }
 
 .btn-glow:hover {
   box-shadow:
-    0 6px 25px rgba(37, 99, 235, 0.7),
-    0 0 0 4px rgba(37, 99, 235, 0.15);
-  transform: translateY(-1px);
+    0 6px 20px rgba(59, 130, 246, 0.45),
+    inset 0 1px 2px rgba(255, 255, 255, 0.25);
+  transform: translateY(-2px);
 }
 
 .btn-glow:active {
   transform: translateY(0);
-  box-shadow: 0 2px 10px rgba(37, 99, 235, 0.4);
+  box-shadow:
+    0 2px 8px rgba(59, 130, 246, 0.3),
+    inset 0 1px 2px rgba(255, 255, 255, 0.15);
 }
 
-/* --- Search input --- */
+/* --- Search input - Neumorphic style --- */
 .search-container {
-  background: rgba(255, 255, 255, 0.05);
-  border: 1.5px solid rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(20px);
-  transition: all 0.3s ease;
+  background: linear-gradient(
+    145deg,
+    rgba(30, 41, 59, 0.4),
+    rgba(20, 29, 48, 0.4)
+  );
+  border: 1.5px solid rgba(255, 255, 255, 0.07);
+  border-radius: 14px;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: var(--shadow-md);
 }
 
 .search-container:focus-within {
-  border-color: rgba(37, 99, 235, 0.7);
+  border-color: rgba(59, 130, 246, 0.5);
   box-shadow:
-    0 0 0 4px rgba(37, 99, 235, 0.12),
-    0 8px 32px rgba(0, 0, 0, 0.3);
-  background: rgba(255, 255, 255, 0.07);
+    0 6px 20px rgba(59, 130, 246, 0.2),
+    inset 0 1px 2px rgba(255, 255, 255, 0.05);
+  background: linear-gradient(
+    145deg,
+    rgba(37, 99, 235, 0.08),
+    rgba(30, 41, 59, 0.4)
+  );
 }
 
-/* --- Range sliders --- */
+/* --- Range sliders - Neumorphic --- */
 input[type='range'] {
   -webkit-appearance: none;
   appearance: none;
-  height: 4px;
+  height: 6px;
   border-radius: 99px;
-  background: rgba(255, 255, 255, 0.1);
+  background: linear-gradient(
+    90deg,
+    rgba(30, 41, 59, 0.8),
+    rgba(20, 29, 48, 0.8)
+  );
   outline: none;
   cursor: pointer;
+  box-shadow: var(--shadow-sm);
 }
 
 input[type='range']::-webkit-slider-thumb {
   -webkit-appearance: none;
   appearance: none;
-  width: 18px;
-  height: 18px;
+  width: 20px;
+  height: 20px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #3b82f6, #4f46e5);
+  background: linear-gradient(135deg, #60a5fa, #3b82f6);
   cursor: pointer;
-  border: 2px solid rgba(255, 255, 255, 0.2);
-  box-shadow: 0 2px 12px rgba(59, 130, 246, 0.6);
-  transition: all 0.2s;
+  border: none;
+  box-shadow:
+    0 4px 12px rgba(59, 130, 246, 0.5),
+    inset 0 1px 2px rgba(255, 255, 255, 0.2);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 input[type='range']::-webkit-slider-thumb:hover {
-  box-shadow: 0 2px 20px rgba(59, 130, 246, 0.9);
-  transform: scale(1.15);
+  box-shadow:
+    0 6px 16px rgba(59, 130, 246, 0.6),
+    inset 0 1px 2px rgba(255, 255, 255, 0.25);
+  transform: scale(1.1);
 }
 
 input[type='range']::-moz-range-thumb {
-  width: 18px;
-  height: 18px;
+  width: 20px;
+  height: 20px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #3b82f6, #4f46e5);
+  background: linear-gradient(135deg, #60a5fa, #3b82f6);
   cursor: pointer;
-  border: 2px solid rgba(255, 255, 255, 0.2);
-  box-shadow: 0 2px 12px rgba(59, 130, 246, 0.6);
+  border: none;
+  box-shadow:
+    0 4px 12px rgba(59, 130, 246, 0.5),
+    inset 0 1px 2px rgba(255, 255, 255, 0.2);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* --- Score badge --- */
+/* --- Score badge - Neumorphic --- */
 .score-badge {
   background: linear-gradient(
     135deg,
-    rgba(37, 99, 235, 0.2),
-    rgba(79, 70, 229, 0.2)
+    rgba(59, 130, 246, 0.15),
+    rgba(37, 99, 235, 0.1)
   );
-  border: 1px solid rgba(37, 99, 235, 0.3);
+  border: 1px solid rgba(59, 130, 246, 0.2);
   color: #93c5fd;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.1);
 }
 
-/* --- Stat chip --- */
+/* --- Stat chip - Neumorphic --- */
 .stat-item {
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  border-radius: 8px;
-  padding: 8px 10px;
-  transition: background 0.2s;
+  background: linear-gradient(
+    145deg,
+    rgba(30, 41, 59, 0.3),
+    rgba(20, 29, 48, 0.3)
+  );
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  padding: 8px 12px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
 }
 
 .stat-item:hover {
-  background: rgba(37, 99, 235, 0.1);
+  background: linear-gradient(
+    145deg,
+    rgba(59, 130, 246, 0.12),
+    rgba(37, 99, 235, 0.08)
+  );
+  box-shadow: 0 3px 12px rgba(59, 130, 246, 0.15);
+  transform: translateY(-1px);
 }
 
-/* --- Scrollbar --- */
+/* --- Scrollbar - Soft styling --- */
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 8px;
+  height: 8px;
 }
 
 ::-webkit-scrollbar-track {
@@ -233,22 +288,32 @@ input[type='range']::-moz-range-thumb {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.1);
+  background: linear-gradient(
+    90deg,
+    rgba(59, 130, 246, 0.3),
+    rgba(59, 130, 246, 0.5)
+  );
   border-radius: 99px;
+  box-shadow: 0 0 8px rgba(59, 130, 246, 0.1);
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(37, 99, 235, 0.4);
+  background: linear-gradient(
+    90deg,
+    rgba(59, 130, 246, 0.5),
+    rgba(37, 99, 235, 0.6)
+  );
+  box-shadow: 0 0 12px rgba(59, 130, 246, 0.2);
 }
 
-/* --- Animations --- */
+/* --- Animations - Subtle and smooth --- */
 @keyframes float {
   0%,
   100% {
     transform: translateY(0px);
   }
   50% {
-    transform: translateY(-8px);
+    transform: translateY(-6px);
   }
 }
 
@@ -264,10 +329,10 @@ input[type='range']::-moz-range-thumb {
 @keyframes pulse-glow {
   0%,
   100% {
-    box-shadow: 0 0 20px rgba(37, 99, 235, 0.3);
+    box-shadow: 0 0 12px rgba(59, 130, 246, 0.2);
   }
   50% {
-    box-shadow: 0 0 40px rgba(37, 99, 235, 0.6);
+    box-shadow: 0 0 24px rgba(59, 130, 246, 0.4);
   }
 }
 
@@ -284,13 +349,13 @@ input[type='range']::-moz-range-thumb {
   animation: shimmer 4s linear infinite;
 }
 
-/* --- Grid pulse skeleton --- */
+/* --- Grid pulse skeleton - Soft animation --- */
 .skeleton-pulse {
   background: linear-gradient(
     90deg,
-    rgba(255, 255, 255, 0.04) 25%,
-    rgba(255, 255, 255, 0.08) 50%,
-    rgba(255, 255, 255, 0.04) 75%
+    rgba(255, 255, 255, 0.03) 25%,
+    rgba(255, 255, 255, 0.06) 50%,
+    rgba(255, 255, 255, 0.03) 75%
   );
   background-size: 200% 100%;
   animation: shimmer 1.5s infinite;
