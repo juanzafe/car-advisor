@@ -39,15 +39,15 @@ const SpecRow = ({
   <div
     className="flex justify-between items-center text-sm py-2.5 px-3 rounded-lg"
     style={{
-      background: 'rgba(255,255,255,0.03)',
-      border: '1px solid rgba(255,255,255,0.05)',
+      background: '#f8fafc',
+      border: '1px solid rgba(0,0,0,0.08)',
       marginBottom: 4,
     }}
   >
-    <span className="flex items-center gap-2 text-slate-500">
+    <span className="flex items-center gap-2 text-slate-700">
       <span className="text-blue-400">{icon}</span> {label}
     </span>
-    <span className="font-bold text-slate-200">
+    <span className="font-bold text-slate-900">
       {value || '---'}
       {unit}
     </span>
@@ -82,10 +82,10 @@ export const ComparisonCard = ({
     <div
       className="rounded-2xl overflow-hidden flex flex-col h-full transition-all duration-300"
       style={{
-        background: 'rgba(30,41,59,0.8)',
-        border: '1px solid rgba(255,255,255,0.08)',
+        background: '#ffffff',
+        border: '1px solid rgba(0,0,0,0.08)',
         backdropFilter: 'blur(20px)',
-        boxShadow: '0 4px 30px rgba(0,0,0,0.3)',
+        boxShadow: '0 4px 30px rgba(0,0,0,0.08)',
       }}
     >
       {/* Image */}
@@ -93,7 +93,7 @@ export const ComparisonCard = ({
         className="relative aspect-video flex items-center justify-center p-4"
         style={{
           background:
-            'linear-gradient(135deg, rgba(15,23,42,0.8), rgba(30,41,59,0.6))',
+            'linear-gradient(135deg, rgba(241,245,249,0.8), rgba(226,232,240,0.6))',
         }}
       >
         <img
@@ -114,10 +114,10 @@ export const ComparisonCard = ({
 
         {car.selectedColor && (
           <div
-            className="absolute bottom-2 left-3 flex items-center gap-1.5 px-2 py-1 rounded-full text-[10px] font-bold uppercase text-slate-400"
+            className="absolute bottom-2 left-3 flex items-center gap-1.5 px-2 py-1 rounded-full text-[10px] font-bold uppercase text-slate-900"
             style={{
-              background: 'rgba(15,23,42,0.8)',
-              border: '1px solid rgba(255,255,255,0.1)',
+              background: 'rgba(241,245,249,0.8)',
+              border: '1px solid rgba(0,0,0,0.08)',
             }}
           >
             <div
@@ -138,7 +138,7 @@ export const ComparisonCard = ({
           <p className="text-blue-400 font-black text-xs uppercase tracking-widest mb-1">
             {car.brand}
           </p>
-          <h3 className="text-2xl font-black text-white leading-tight">
+          <h3 className="text-2xl font-black text-slate-900 leading-tight">
             {car.model}
           </h3>
         </div>
@@ -173,10 +173,10 @@ export const ComparisonCard = ({
 
         <div
           className="mt-5 pt-4 flex items-center justify-between"
-          style={{ borderTop: '1px solid rgba(255,255,255,0.07)' }}
+          style={{ borderTop: '1px solid rgba(0,0,0,0.08)' }}
         >
           {formattedPrice ? (
-            <span className="text-2xl font-black text-white">
+            <span className="text-2xl font-black text-slate-900">
               {formattedPrice}
             </span>
           ) : (
@@ -205,8 +205,8 @@ const WinnerCard = ({
   <div
     className="rounded-2xl p-4 flex items-center gap-3 flex-1"
     style={{
-      background: 'rgba(255,255,255,0.04)',
-      border: '1px solid rgba(255,255,255,0.07)',
+      background: '#ffffff',
+      border: '1px solid rgba(0,0,0,0.08)',
       backdropFilter: 'blur(12px)',
     }}
   >
@@ -220,10 +220,10 @@ const WinnerCard = ({
       <span className="text-white">{icon}</span>
     </div>
     <div>
-      <span className="text-[10px] font-black uppercase tracking-widest text-slate-500 block mb-0.5">
+      <span className="text-[10px] font-black uppercase tracking-widest text-slate-700 block mb-0.5">
         {label}
       </span>
-      <span className="text-sm font-black text-white leading-tight">
+      <span className="text-sm font-black text-slate-900 leading-tight">
         {car.brand} {car.model}
       </span>
     </div>
@@ -244,8 +244,8 @@ export const ComparisonGrid = ({
     <section
       className="rounded-3xl space-y-8 p-4 md:p-8"
       style={{
-        background: 'rgba(255,255,255,0.02)',
-        border: '1px solid rgba(255,255,255,0.06)',
+        background: '#f8fafc',
+        border: '1px solid rgba(0,0,0,0.08)',
         backdropFilter: 'blur(20px)',
       }}
     >
@@ -281,25 +281,25 @@ export const ComparisonGrid = ({
       <div
         className="rounded-2xl p-6"
         style={{
-          background: 'rgba(255,255,255,0.03)',
-          border: '1px solid rgba(255,255,255,0.06)',
+          background: '#ffffff',
+          border: '1px solid rgba(0,0,0,0.08)',
           height: 320,
         }}
       >
         <ResponsiveContainer width="100%" height="100%">
           <RadarChart data={buildRadarData(cars)}>
-            <PolarGrid stroke="rgba(255,255,255,0.08)" />
+            <PolarGrid stroke="rgba(0,0,0,0.1)" />
             <PolarAngleAxis
               dataKey="metric"
-              tick={{ fill: '#64748b', fontSize: 13, fontWeight: 900 }}
+              tick={{ fill: '#334155', fontSize: 13, fontWeight: 900 }}
             />
             <PolarRadiusAxis domain={[0, 100]} axisLine={false} tick={false} />
             <Tooltip
               contentStyle={{
-                background: 'rgba(15,23,42,0.95)',
-                border: '1px solid rgba(255,255,255,0.1)',
+                background: 'rgba(255,255,255,0.95)',
+                border: '1px solid rgba(0,0,0,0.1)',
                 borderRadius: 12,
-                color: '#f1f5f9',
+                color: '#1e293b',
                 fontSize: 12,
               }}
             />

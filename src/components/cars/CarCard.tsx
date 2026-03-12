@@ -172,9 +172,9 @@ export const CarCard = ({
           onClick={handleFavoriteClick}
           className="absolute top-3 left-3 z-30 p-2 rounded-full transition-all duration-200"
           style={{
-            background: 'rgba(15,23,42,0.7)',
+            background: 'rgba(255,255,255,0.9)',
             backdropFilter: 'blur(8px)',
-            border: '1px solid rgba(255,255,255,0.1)',
+            border: '1px solid rgba(0,0,0,0.08)',
           }}
           aria-label={isFavorite ? 'Remove from favorites' : 'Add to favorites'}
         >
@@ -192,9 +192,9 @@ export const CarCard = ({
           <div
             className="absolute top-3 right-3 z-30 px-2.5 py-1 rounded-full text-[11px] font-black"
             style={{
-              background: 'rgba(37,99,235,0.2)',
-              border: '1px solid rgba(37,99,235,0.35)',
-              color: '#93c5fd',
+              background: 'rgba(59,130,246,0.1)',
+              border: '1px solid rgba(59,130,246,0.3)',
+              color: '#2563eb',
               backdropFilter: 'blur(8px)',
             }}
           >
@@ -223,7 +223,7 @@ export const CarCard = ({
           className="cursor-pointer relative overflow-hidden"
           style={{
             background:
-              'linear-gradient(180deg, rgba(30,41,59,0.6) 0%, rgba(15,23,42,0.9) 100%)',
+              'linear-gradient(180deg, rgba(241,245,249,0.6) 0%, rgba(248,250,252,0.9) 100%)',
           }}
         >
           <CarImage
@@ -258,13 +258,13 @@ export const CarCard = ({
             }
           >
             <div>
-              <p className="text-[11px] font-black uppercase tracking-widest text-blue-400 mb-0.5">
+              <p className="text-[11px] font-black uppercase tracking-widest text-blue-600 mb-0.5">
                 {car.brand}
               </p>
-              <h3 className="font-black text-lg leading-tight text-white">
+              <h3 className="font-black text-lg leading-tight text-slate-900">
                 {car.model}
               </h3>
-              <p className="text-xs text-slate-500 mt-0.5">{car.year}</p>
+              <p className="text-xs text-slate-600 mt-0.5">{car.year}</p>
             </div>
             <div className="flex gap-1.5 mt-1 flex-shrink-0">
               {carService.colorList.map((color) => (
@@ -279,7 +279,7 @@ export const CarCard = ({
                     border:
                       selectedColor === color
                         ? '2px solid #3b82f6'
-                        : '2px solid rgba(255,255,255,0.15)',
+                        : '2px solid rgba(0,0,0,0.1)',
                     transform:
                       selectedColor === color ? 'scale(1.25)' : 'scale(1)',
                     boxShadow:
@@ -297,8 +297,8 @@ export const CarCard = ({
           <div
             className="grid grid-cols-2 gap-x-3 gap-y-2"
             style={{
-              borderTop: '1px solid rgba(255,255,255,0.06)',
-              borderBottom: '1px solid rgba(255,255,255,0.06)',
+              borderTop: '1px solid rgba(0,0,0,0.06)',
+              borderBottom: '1px solid rgba(0,0,0,0.06)',
               paddingTop: 14,
               paddingBottom: 14,
             }}
@@ -308,15 +308,15 @@ export const CarCard = ({
                 key={label}
                 className="flex justify-between items-center text-[11px] px-2 py-1.5 rounded-lg"
                 style={{
-                  background: 'rgba(255,255,255,0.03)',
-                  border: '1px solid rgba(255,255,255,0.05)',
+                  background: '#f8fafc',
+                  border: '1px solid rgba(0,0,0,0.06)',
                 }}
               >
-                <span className="flex items-center gap-1.5 text-slate-500">
+                <span className="flex items-center gap-1.5 text-slate-600">
                   <span className="text-blue-500">{icon}</span>
                   {label}
                 </span>
-                <span className="font-bold text-slate-200 uppercase text-[11px]">
+                <span className="font-bold text-slate-800 uppercase text-[11px]">
                   {value}
                 </span>
               </div>
@@ -326,7 +326,7 @@ export const CarCard = ({
           {/* Price + Compare button */}
           <div className="mt-auto space-y-2.5">
             {car.price > 0 ? (
-              <p className="text-lg font-black text-white text-center">
+              <p className="text-lg font-black text-slate-900 text-center">
                 {new Intl.NumberFormat('es-ES', {
                   style: 'currency',
                   currency: 'EUR',
@@ -334,7 +334,7 @@ export const CarCard = ({
                 }).format(car.price)}
               </p>
             ) : (
-              <p className="flex items-center justify-center gap-1.5 text-xs text-slate-500 text-center">
+              <p className="flex items-center justify-center gap-1.5 text-xs text-slate-600 text-center">
                 <Info size={12} className="text-slate-600" />
                 Precio no disponible
               </p>
@@ -346,14 +346,14 @@ export const CarCard = ({
               aria-disabled={isSelected}
               className={`w-full py-3 rounded-xl font-bold text-sm transition-all ${
                 isSelected
-                  ? 'cursor-not-allowed text-slate-500'
+                  ? 'cursor-not-allowed text-slate-600'
                   : 'text-white btn-glow'
               }`}
               style={
                 isSelected
                   ? {
-                      background: 'rgba(255,255,255,0.05)',
-                      border: '1px solid rgba(255,255,255,0.08)',
+                      background: '#e2e8f0',
+                      border: '1px solid rgba(0,0,0,0.08)',
                     }
                   : {}
               }

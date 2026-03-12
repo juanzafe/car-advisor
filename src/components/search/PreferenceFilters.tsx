@@ -62,15 +62,15 @@ export const PreferenceFilters = ({
     <div
       className="rounded-2xl overflow-hidden"
       style={{
-        background: 'rgba(255,255,255,0.03)',
-        border: '1px solid rgba(255,255,255,0.07)',
+        background: '#ffffff',
+        border: '1px solid rgba(0,0,0,0.08)',
         backdropFilter: 'blur(20px)',
       }}
     >
       {/* Header */}
       <div
         className="flex items-center gap-3 px-6 py-4"
-        style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}
+        style={{ borderBottom: '1px solid rgba(0,0,0,0.08)' }}
       >
         <div
           className="p-2 rounded-lg"
@@ -81,7 +81,9 @@ export const PreferenceFilters = ({
         >
           <Settings size={16} className="text-blue-400" />
         </div>
-        <h2 className="text-base font-black text-white">{t.yourPreferences}</h2>
+        <h2 className="text-base font-black text-slate-900">
+          {t.yourPreferences}
+        </h2>
         <span
           className="ml-auto text-xs font-semibold px-2 py-0.5 rounded-full text-blue-300"
           style={{
@@ -112,7 +114,7 @@ export const PreferenceFilters = ({
               <div className="flex justify-between items-center">
                 <label
                   htmlFor={id}
-                  className="flex items-center gap-2 text-sm font-semibold text-slate-400 cursor-pointer"
+                  className="flex items-center gap-2 text-sm font-semibold text-slate-700 cursor-pointer"
                 >
                   {icon} {label}
                 </label>
@@ -157,7 +159,7 @@ export const PreferenceFilters = ({
         <div className="space-y-4">
           <label
             htmlFor="traction-select"
-            className="flex items-center gap-2 text-sm font-semibold text-slate-400 cursor-pointer"
+            className="flex items-center gap-2 text-sm font-semibold text-slate-700 cursor-pointer"
           >
             <Gauge size={15} className="text-purple-400" /> {t.idealTraction}
           </label>
@@ -169,22 +171,34 @@ export const PreferenceFilters = ({
               onChange={(e) =>
                 handleChange('preferredTraction', e.target.value)
               }
-              className="w-full py-2 pl-3 pr-8 rounded-xl text-sm font-bold text-white outline-none appearance-none cursor-pointer transition-all"
+              className="w-full py-2 pl-3 pr-8 rounded-xl text-sm font-bold text-slate-900 outline-none appearance-none cursor-pointer transition-all"
               style={{
-                background: 'rgba(255,255,255,0.06)',
-                border: '1px solid rgba(255,255,255,0.1)',
+                background: '#f8fafc',
+                border: '1px solid rgba(0,0,0,0.08)',
               }}
             >
-              <option value="any" style={{ background: '#1e293b' }}>
+              <option
+                value="any"
+                style={{ background: '#ffffff', color: '#000000' }}
+              >
                 {t.any}
               </option>
-              <option value="FWD" style={{ background: '#1e293b' }}>
+              <option
+                value="FWD"
+                style={{ background: '#ffffff', color: '#000000' }}
+              >
                 {t.front} (FWD)
               </option>
-              <option value="RWD" style={{ background: '#1e293b' }}>
+              <option
+                value="RWD"
+                style={{ background: '#ffffff', color: '#000000' }}
+              >
                 {t.rear} (RWD)
               </option>
-              <option value="AWD" style={{ background: '#1e293b' }}>
+              <option
+                value="AWD"
+                style={{ background: '#ffffff', color: '#000000' }}
+              >
                 {t.allWheel} (AWD)
               </option>
             </select>
