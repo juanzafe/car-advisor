@@ -17,6 +17,9 @@ jobs:
       - name: Linting
         run: npm run lint
 
+      - name: Run Vitest tests
+        run: npm run test:run
+
       - name: Install Playwright Browsers
         run: npx playwright install --with-deps chromium
 
