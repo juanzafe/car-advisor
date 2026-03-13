@@ -37,7 +37,7 @@ export const useCarRotation = (
 
     const interval = setInterval(() => {
       setAngleIndex((prev) => (prev + 1) % carService.angles.length);
-    }, 120);
+    }, 500);
 
     return () => clearInterval(interval);
   }, [rotating, setAngleIndex]);

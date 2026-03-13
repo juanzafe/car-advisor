@@ -141,7 +141,7 @@ export const CarImage = ({
       {showControls && interactive && (
         <div className="absolute bottom-0 inset-x-0 flex justify-center z-40 pb-2">
           <div
-            className="flex items-center gap-6 bg-white/10 backdrop-blur-md shadow-xl p-3 rounded-full border border-white/20"
+            className="flex items-center gap-6 bg-white/80 backdrop-blur-md shadow-xl p-3 rounded-full border border-slate-200"
             onClick={(e) => e.stopPropagation()}
           >
             <button
@@ -154,7 +154,7 @@ export const CarImage = ({
                     carService.angles.length,
                 });
               }}
-              className="text-white p-2 hover:bg-white/10 active:bg-white/20 rounded-full transition-colors"
+              className="text-slate-700 p-2 hover:bg-slate-100 active:bg-slate-200 rounded-full transition-colors"
             >
               <RotateCw size={24} className="rotate-180" />
             </button>
@@ -181,7 +181,7 @@ export const CarImage = ({
                   payload: (angleIndex + 1) % carService.angles.length,
                 });
               }}
-              className="text-white p-2 hover:bg-white/10 active:bg-white/20 rounded-full transition-colors"
+              className="text-slate-700 p-2 hover:bg-slate-100 active:bg-slate-200 rounded-full transition-colors"
             >
               <RotateCw size={24} />
             </button>
